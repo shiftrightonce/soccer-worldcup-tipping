@@ -17,4 +17,3 @@ services/redis/data
 services/postgres/data
 services/nginx/sites/*_name.conf
 vendor/
-projects/

@@ -1,0 +1,32 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2024"
+
+[patch.crates-io]
+dirtybase_app = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_app" }
+dirtybase_3rd_client = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_3rd_client" }
+dirtybase_auth = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_auth" }
+dirtybase_cache = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_cache" }
+dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
+dirtybase_contract = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_contract" }
+dirtybase_cron = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_cron" }
+dirtybase_db = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_db" }
+dirtybase_db_macro = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_db_macro" }
+dirtybase_encrypt = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_encrypt" }
+dirtybase_helper = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_helper" }
+dirtybase_lock = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_lock" }
+dirtybase_mail = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_mail" }
+dirtybase_multitenant = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_multitenant" }
+dirtybase_queue = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_queue" }
+dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
+dirtybase_session = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_session" }
+
+[dependencies]
+dirtybase_contract = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_contract" }
+dirtybase_app = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_app", features = [
+  "full",
+] }
+dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
+dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
+tokio = { version = "1.50.0", features = ["full"] }
