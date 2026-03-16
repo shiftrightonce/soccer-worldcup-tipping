@@ -3,11 +3,99 @@ use std::{collections::HashSet, fmt::Display};
 use dirtybase_app::{
     db::{
         field_values::FieldValue,
-        types::{ArcUuid7, DateTimeField},
+        types::{ArcUuid7, BooleanField, DateTimeField},
     },
     db_macro::DirtyTable,
 };
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, DirtyTable)]
+#[dirty(soft_deletable, timestamps)]
+pub struct TipStrategy {
+    id: Option<ArcUuid7>,
+    game_id: Option<ArcUuid7>,
+    // Date and time when this strategy opens for tips.
+    opens_at: DateTimeField,
+    // Date and time when this strategy ends for tips.
+    ends_at: DateTimeField,
+    // Date and time when this strategy calculates points.
+    calculate_points_on: Option<DateTimeField>,
+    // Indicates whether this strategy has been completed and all points have been calculated.
+    completed: BooleanField,
+    // Types of strategies to apply.
+    strategy_types: HashSet<StrategyType>,
+    created_at: Option<DateTimeField>,
+    updated_at: Option<DateTimeField>,
+    deleted_at: Option<DateTimeField>,
+}
+
+/// A strategy actual data
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum Strategy {
+    /// No strategy. This is the default.
+    #[default]
+    None,
+    /// The winner of the game. This is per game basis.
+    #[serde(alias = "winner")]
+    Winner(Option<ArcUuid7>),
+    /// The goals scored by each team. This is per game basis.
+    #[serde(alias = "goals")]
+    Goals {
+        country_a: Option<ArcUuid7>,
+        country_b: Option<ArcUuid7>,
+    },
+    /// The winner of the cup. This is available before the worldcup starts.
+    #[serde(alias = "cup_winner")]
+    CupWinner(Option<ArcUuid7>),
+    /// The game is going to penalty shootouts. This is per game basis.
+    #[serde(alias = "game_to_penalty")]
+    GameToPenalty(bool),
+    /// The first red card of the game. This is per game basis.
+    #[serde(alias = "first_red_card")]
+    FirstRedCard(Option<ArcUuid7>),
+    /// The first yellow card of the game. This is per game basis.
+    #[serde(alias = "first_yellow_card")]
+    FirstYellowCard(Option<ArcUuid7>),
+    /// The penalty goals scored by each team. This is per game basis.
+    #[serde(alias = "penalty_goals")]
+    PenaltyGoals {
+        country_a: Option<ArcUuid7>,
+        country_b: Option<ArcUuid7>,
+    },
+    /// The group ranking of the teams. This is per group basis and only available before the group stage starts.
+    #[serde(alias = "group_ranking")]
+    GroupRanking(Option<[ArcUuid7; 4]>),
+    /// The round of 32 qualifiers. This is per the round of 32 qualifiers.
+    #[serde(alias = "round_32_qualifiers")]
+    Round32Qualifiers([ArcUuid7; 32]),
+    /// The round of 16 qualifiers. This is per the round of 16 qualifiers.
+    #[serde(alias = "round_16_qualifiers")]
+    Round16Qualifiers([ArcUuid7; 16]),
+    /// The round of 8 qualifiers. This is per the round of 8 qualifiers.
+    #[serde(alias = "round_8_qualifiers")]
+    Round8Qualifiers([ArcUuid7; 8]),
+    /// The round of 4 qualifiers. This is per the round of 4 qualifiers.
+    #[serde(alias = "round_4_qualifiers")]
+    Round4Qualifiers([ArcUuid7; 4]),
+    /// The third place qualifiers. This will be available after the round of 4 qualifiers.
+    #[serde(alias = "third_place_qualifiers")]
+    ThirdPlaceQualifiers([ArcUuid7; 2]),
+    /// The third place qualifiers. This will be available after the round of 4 qualifiers.
+    #[serde(alias = "final")]
+    Final([ArcUuid7; 2]),
+}
+
+impl From<Strategy> for FieldValue {
+    fn from(value: Strategy) -> Self {
+        FieldValue::String(serde_json::to_string(&value).expect("could not serialise strategy"))
+    }
+}
+
+impl From<FieldValue> for Strategy {
+    fn from(value: FieldValue) -> Self {
+        serde_json::from_str::<Strategy>(&value.to_string()).unwrap_or_default()
+    }
+}
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum StrategyType {
@@ -95,16 +183,4 @@ impl From<StrategyType> for FieldValue {
     fn from(value: StrategyType) -> Self {
         FieldValue::String(value.to_string())
     }
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, DirtyTable)]
-pub struct TipStrategy {
-    id: Option<ArcUuid7>,
-    game_id: Option<ArcUuid7>,
-    opens_at: DateTimeField,
-    ends_at: DateTimeField,
-    strategies: HashSet<StrategyType>,
-    created_at: Option<DateTimeField>,
-    updated_at: Option<DateTimeField>,
-    deleted_at: Option<DateTimeField>,
 }
