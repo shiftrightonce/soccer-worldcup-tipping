@@ -1,7 +1,5 @@
 use dirtybase_app::{
-    db::types::{
-        ArcUuid7, CreatedAtField, DeletedAtField, IntegerField, StringField, UpdatedAtField,
-    },
+    db::types::{ArcUuid7, CreatedAtField, DeletedAtField, StringField, UpdatedAtField},
     db_macro::DirtyTable,
 };
 
@@ -24,7 +22,6 @@ pub struct User {
     email: StringField,
     #[dirty(embedded)]
     data: UserData,
-    points: IntegerField,
     created_at: CreatedAtField,
     updated_at: UpdatedAtField,
     deleted_at: DeletedAtField,

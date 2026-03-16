@@ -2,8 +2,9 @@ use dirtybase_app::{
     db::types::{ArcUuid7, CreatedAtField, DeletedAtField, StringField, UpdatedAtField},
     db_macro::DirtyTable,
 };
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone, DirtyTable)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, DirtyTable, Serialize, Deserialize)]
 #[dirty(soft_deletable, id_not_auto, timestamp)]
 pub struct Country {
     id: Option<ArcUuid7>,

@@ -120,9 +120,9 @@ dependencies = [
 
 [[package]]
 name = "anstyle"
-version = "1.0.13"
+version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5192cca8006f1fd4f7237516f40fa183bb07f8fbdfedaa0036de5ea9b0b45e78"
+checksum = "940b3a0ca603d1eade50a4846a2afffd5ef57a9feac2c0e2ec2e14f9ead76000"
 
 [[package]]
 name = "anstyle-parse"
@@ -371,6 +371,8 @@ dependencies = [
  "dirtybase_common",
  "dirtybase_contract",
  "dirtybase_realtime",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 
@@ -551,9 +553,9 @@ checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
 
 [[package]]
 name = "cc"
-version = "1.2.56"
+version = "1.2.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aebf35691d1bfb0ac386a69bac2fde4dd276fb618cf8bf4f5318fe285e821bb2"
+checksum = "7a0dd1ca384932ff3641c8718a02769f1698e7563dc6974ffd03346116310423"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -727,9 +729,9 @@ dependencies = [
 
 [[package]]
 name = "colorchoice"
-version = "1.0.4"
+version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
+checksum = "1d07550c9036bf2ae0c684c4297d503f838287c83c53686d05370d0e139ae570"
 
 [[package]]
 name = "combine"
@@ -1166,7 +1168,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_3rd_client"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "busybody",
@@ -1180,7 +1182,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_app"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "argon2",
@@ -1240,7 +1242,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_auth"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "bcrypt",
@@ -1268,7 +1270,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_cache"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1289,7 +1291,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_common"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1316,7 +1318,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_contract"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "argon2",
@@ -1361,7 +1363,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_cron"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "busstop",
@@ -1382,7 +1384,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_db"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1409,7 +1411,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_db_macro"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "busybody",
@@ -1425,7 +1427,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_encrypt"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -1440,7 +1442,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_helper"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "base64ct",
@@ -1462,7 +1464,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_mail"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1476,7 +1478,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_realtime"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "axum",
@@ -1495,7 +1497,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_session"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#a06bdae51cc9781b564c41bcb86825f782487777"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4752,9 +4754,9 @@ dependencies = [
 
 [[package]]
 name = "tinyvec"
-version = "1.10.0"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfa5fdc3bce6191a1dbc8c02d5c8bffcf557bafa17c124c5264a458f1b0613fa"
+checksum = "3e61e67053d25a4e82c844e8424039d9745781b3fc4f32b8d55ed50f5f667ef3"
 dependencies = [
  "tinyvec_macros",
 ]
@@ -4980,9 +4982,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-subscriber"
-version = "0.3.22"
+version = "0.3.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f30143827ddab0d256fd843b7a66d164e9f271cfa0dde49142c5ca0ca291f1e"
+checksum = "cb7f578e5945fb242538965c2d0b04418d38ec25c79d160cd279bf0731c8d319"
 dependencies = [
  "matchers",
  "nu-ansi-term",
@@ -6123,18 +6125,3 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "dirtybase_lock"
-version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
-
-[[patch.unused]]
-name = "dirtybase_multitenant"
-version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"
-
-[[patch.unused]]
-name = "dirtybase_queue"
-version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#581f8840da01d858ee33c959039c747fb18d5942"

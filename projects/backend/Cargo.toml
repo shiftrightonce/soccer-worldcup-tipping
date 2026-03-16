@@ -15,10 +15,10 @@ dirtybase_db = { git = "https://github.com/kpama/dirtybase.git", branch = "dev",
 dirtybase_db_macro = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_db_macro" }
 dirtybase_encrypt = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_encrypt" }
 dirtybase_helper = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_helper" }
-dirtybase_lock = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_lock" }
+# dirtybase_lock = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_lock" }
 dirtybase_mail = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_mail" }
-dirtybase_multitenant = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_multitenant" }
-dirtybase_queue = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_queue" }
+# dirtybase_multitenant = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_multitenant" }
+# dirtybase_queue = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_queue" }
 dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
 dirtybase_session = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_session" }
 
@@ -30,3 +30,5 @@ dirtybase_app = { git = "https://github.com/kpama/dirtybase.git", branch = "dev"
 dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
 dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
 tokio = { version = "1.50.0", features = ["full"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"

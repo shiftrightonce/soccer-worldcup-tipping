@@ -4,6 +4,7 @@ use dirtybase_contract::db_contract::base::manager::Manager;
 use dirtybase_contract::db_contract::migration::Migration;
 
 use crate::dirtybase_entry::model::country::Country;
+use crate::dirtybase_entry::model::game::Game;
 use crate::dirtybase_entry::model::user::User;
 
 pub struct Mig1773373410CreateApplicationTables;
@@ -17,7 +18,6 @@ impl Migration for Mig1773373410CreateApplicationTables {
                 bp.uuid_as_id(None);
                 bp.string(User::col_name_for_email());
                 bp.json(User::col_name_for_data()).nullable();
-                bp.integer(User::col_name_for_points());
                 bp.timestamps();
                 bp.soft_deletable();
             })
@@ -34,10 +34,49 @@ impl Migration for Mig1773373410CreateApplicationTables {
                 bp.soft_deletable();
             })
             .await?;
+        // Game
+        manager
+            .create_table_schema(Game::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.string(Game::col_name_for_label());
+                bp.integer(Game::col_name_for_year());
+                bp.uuid_fk_as(
+                    Country::table_name(),
+                    Game::col_name_for_country_a(),
+                    true,
+                    Some(Country::id_column()),
+                );
+                bp.uuid_fk_as(
+                    Country::table_name(),
+                    Game::col_name_for_country_b(),
+                    true,
+                    Some(Country::id_column()),
+                );
+                bp.boolean(Game::col_name_for_penalty()).default_is_false();
+                bp.integer(Game::col_name_for_country_a_goals())
+                    .default_is_zero();
+                bp.integer(Game::col_name_for_country_b_goals())
+                    .default_is_zero();
+                bp.integer(Game::col_name_for_country_a_penalty_goals())
+                    .default_is_zero();
+                bp.integer(Game::col_name_for_country_b_penalty_goals())
+                    .default_is_zero();
+                bp.uuid_fk_as(
+                    Country::table_name(),
+                    Game::col_name_for_winner(),
+                    true,
+                    Some(Country::id_column()),
+                )
+                .set_is_nullable(true);
+                bp.timestamps();
+                bp.soft_deletable();
+            })
+            .await?;
         Ok(())
     }
 
     async fn down(&self, manager: &Manager) -> Result<(), anyhow::Error> {
+        manager.drop_table(Game::table_name()).await?;
         manager.drop_table(Country::table_name()).await?;
         manager.drop_table(User::table_name()).await?;
         Ok(())
