@@ -1,4 +1,6 @@
+mod api;
 mod general;
+
 use dirtybase_contract::prelude::RouterManager;
 
 pub(crate) fn register_routes(manager: &mut RouterManager) {
@@ -8,4 +10,7 @@ pub(crate) fn register_routes(manager: &mut RouterManager) {
     manager.general(None, |router| {
         router.get_x("/", general::index_handler);
     });
+
+    // v1 routes
+    api::v1::register_routes(manager);
 }
