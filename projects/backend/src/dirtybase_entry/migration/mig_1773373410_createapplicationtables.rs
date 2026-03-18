@@ -1,5 +1,6 @@
 use dirtybase_app::db::TableModel;
 use dirtybase_contract::anyhow;
+use dirtybase_contract::auth_contract::Actor;
 use dirtybase_contract::db_contract::base::manager::Manager;
 use dirtybase_contract::db_contract::migration::Migration;
 
@@ -50,6 +51,9 @@ impl Migration for Mig1773373410CreateApplicationTables {
                 bp.uuid_as_id(None);
                 bp.string(User::col_name_for_email());
                 bp.json(User::col_name_for_data()).nullable();
+                bp.uuid_table_fk::<Actor>(true)
+                    .set_is_nullable(true)
+                    .set_is_unique(true);
                 bp.timestamps();
                 bp.soft_deletable();
             })

@@ -1,5 +1,5 @@
 use dirtybase_contract::app_contract::Context;
-use dirtybase_contract::auth_contract::storage2::{PermStorageProvider, PermissionStorage};
+use dirtybase_contract::auth_contract::storage::{PermStorageProvider, PermissionStorage};
 use dirtybase_contract::auth_contract::{ActorPayload, AuthUserStatus, PersistActorPayload};
 use dirtybase_contract::db_contract::base::manager::Manager;
 use dirtybase_contract::prelude::*;
@@ -22,9 +22,8 @@ async fn seed_users(manager: &Manager, context: &Context) {
     for u in 1..200 {
         let username = format!("tip_user{}", u);
         let email = format!("tip_user{}@example.com", u);
-        let user = User::new(&email);
         let actor = ActorPayload {
-            email: Some(email),
+            email: Some(email.clone()),
             username: Some(username),
             status: Some(AuthUserStatus::Active),
             password: Some("password".to_string()),
@@ -34,11 +33,14 @@ async fn seed_users(manager: &Manager, context: &Context) {
         let actor_payload = PersistActorPayload::Save {
             actor: actor.into(),
         };
-        auth_storage
+        if let Some(actor) = auth_storage
             .save_actor(actor_payload)
             .await
-            .expect("could not create user's actor");
-        user_repo.insert(user).await.expect("could not create user");
+            .expect("could not create user's actor")
+        {
+            let user = User::new(&email, actor.id().cloned().unwrap());
+            user_repo.insert(user).await.expect("could not create user");
+        }
     }
 }
 

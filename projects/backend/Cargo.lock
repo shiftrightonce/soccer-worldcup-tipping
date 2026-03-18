@@ -374,6 +374,8 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -778,9 +780,9 @@ dependencies = [
 
 [[package]]
 name = "config"
-version = "0.15.21"
+version = "0.15.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fe5feec195269515c4722937cd7ffcfe7b4205d18d2e6577b7223ecb159ab00"
+checksum = "8e68cfe19cd7d23ffde002c24ffa5cda73931913ef394d5eaaa32037dc940c0c"
 dependencies = [
  "async-trait",
  "convert_case",
@@ -792,7 +794,7 @@ dependencies = [
  "serde_core",
  "serde_json",
  "toml",
- "winnow 0.7.15",
+ "winnow 1.0.0",
  "yaml-rust2",
 ]
 
@@ -1168,7 +1170,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_3rd_client"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "busybody",
@@ -1182,7 +1184,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_app"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "argon2",
@@ -1242,7 +1244,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_auth"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "bcrypt",
@@ -1270,7 +1272,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_cache"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1291,7 +1293,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_common"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1318,7 +1320,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_contract"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "argon2",
@@ -1363,7 +1365,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_cron"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "busstop",
@@ -1384,7 +1386,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_db"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1411,7 +1413,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_db_macro"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "busybody",
@@ -1427,7 +1429,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_encrypt"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -1442,7 +1444,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_helper"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "base64ct",
@@ -1464,7 +1466,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_mail"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1478,7 +1480,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_realtime"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "axum",
@@ -1497,7 +1499,7 @@ dependencies = [
 [[package]]
 name = "dirtybase_session"
 version = "0.1.0"
-source = "git+https://github.com/kpama/dirtybase.git?branch=dev#f8318b4f141cd346bc7dc673293ef59c4536f397"
+source = "git+https://github.com/kpama/dirtybase.git?branch=dev#471ea9a9738445db2a7c6182d93a1f18a416b667"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4848,33 +4850,33 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "1.0.6+spec-1.1.0"
+version = "1.0.7+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "399b1124a3c9e16766831c6bba21e50192572cdd98706ea114f9502509686ffc"
+checksum = "dd28d57d8a6f6e458bc0b8784f8fdcc4b99a437936056fa122cb234f18656a96"
 dependencies = [
  "serde_core",
  "serde_spanned",
  "toml_datetime",
  "toml_parser",
- "winnow 0.7.15",
+ "winnow 1.0.0",
 ]
 
 [[package]]
 name = "toml_datetime"
-version = "1.0.0+spec-1.1.0"
+version = "1.0.1+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32c2555c699578a4f59f0cc68e5116c8d7cabbd45e1409b989d4be085b53f13e"
+checksum = "9b320e741db58cac564e26c607d3cc1fdc4a88fd36c879568c07856ed83ff3e9"
 dependencies = [
  "serde_core",
 ]
 
 [[package]]
 name = "toml_parser"
-version = "1.0.9+spec-1.1.0"
+version = "1.0.10+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "702d4415e08923e7e1ef96cd5727c0dfed80b4d2fa25db9647fe5eb6f7c5a4c4"
+checksum = "7df25b4befd31c4816df190124375d5a20c6b6921e2cad937316de3fccd63420"
 dependencies = [
- "winnow 0.7.15",
+ "winnow 1.0.0",
 ]
 
 [[package]]
@@ -5871,9 +5873,9 @@ dependencies = [
 
 [[package]]
 name = "winnow"
-version = "0.7.15"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945"
+checksum = "a90e88e4667264a994d34e6d1ab2d26d398dcdca8b7f52bec8668957517fc7d8"
 dependencies = [
  "memchr",
 ]
