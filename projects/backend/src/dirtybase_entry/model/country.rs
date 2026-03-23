@@ -1,3 +1,4 @@
+use chrono;
 use dirtybase_app::{
     db::types::{ArcUuid7, CreatedAtField, DeletedAtField, StringField, UpdatedAtField},
     db_macro::DirtyTable,
@@ -27,5 +28,53 @@ impl Country {
             image: image.to_string().into(),
             ..Default::default()
         }
+    }
+
+    pub fn id(&self) -> Option<&ArcUuid7> {
+        self.id.as_ref()
+    }
+
+    pub fn set_game_code(&mut self, game_code: &str) {
+        self.game_code = game_code.to_string().into();
+    }
+
+    pub fn set_name(&mut self, name: &str) {
+        self.name = name.to_string().into();
+    }
+
+    pub fn set_short(&mut self, short: &str) {
+        self.short = short.to_string().into();
+    }
+
+    pub fn set_image(&mut self, image: &str) {
+        self.image = image.to_string().into();
+    }
+
+    pub fn game_code(&self) -> &str {
+        self.game_code.as_str()
+    }
+
+    pub fn name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    pub fn short(&self) -> &str {
+        self.short.as_str()
+    }
+
+    pub fn image(&self) -> &str {
+        self.image.as_str()
+    }
+
+    pub fn created_at(&self) -> Option<&chrono::DateTime<chrono::Utc>> {
+        self.created_at.as_ref()
+    }
+
+    pub fn updated_at(&self) -> Option<&chrono::DateTime<chrono::Utc>> {
+        self.updated_at.as_ref()
+    }
+
+    pub fn deleted_at(&self) -> Option<&chrono::DateTime<chrono::Utc>> {
+        self.deleted_at.as_ref()
     }
 }
