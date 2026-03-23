@@ -287,7 +287,14 @@ impl Game {
     }
 
     pub fn set_winner_id(&mut self, winner_id: ArcUuid7) -> &mut Self {
-        self.winner_id = Some(winner_id);
+        if self.country_a_id == winner_id || self.country_b_id == winner_id {
+            self.winner_id = Some(winner_id);
+        } else {
+            tracing::debug!(
+                "winder must be one of the countries: {winner_id}, game: {:#?}",
+                &self.id
+            );
+        }
         self
     }
 
