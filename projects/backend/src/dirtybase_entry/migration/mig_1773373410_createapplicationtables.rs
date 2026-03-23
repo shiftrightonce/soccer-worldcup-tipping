@@ -78,13 +78,13 @@ impl Migration for Mig1773373410CreateApplicationTables {
                 bp.integer(Game::col_name_for_year());
                 bp.uuid_fk_as(
                     Country::table_name(),
-                    Game::col_name_for_country_a(),
+                    Game::col_name_for_country_a_id(),
                     true,
                     Some(Country::id_column()),
                 );
                 bp.uuid_fk_as(
                     Country::table_name(),
-                    Game::col_name_for_country_b(),
+                    Game::col_name_for_country_b_id(),
                     true,
                     Some(Country::id_column()),
                 );
@@ -99,7 +99,7 @@ impl Migration for Mig1773373410CreateApplicationTables {
                     .default_is_zero();
                 bp.uuid_fk_as(
                     Country::table_name(),
-                    Game::col_name_for_winner(),
+                    Game::col_name_for_winner_id(),
                     true,
                     Some(Country::id_column()),
                 )

@@ -1,6 +1,7 @@
-use chrono;
 use dirtybase_app::{
-    db::types::{ArcUuid7, CreatedAtField, DeletedAtField, StringField, UpdatedAtField},
+    db::types::{
+        ArcUuid7, CreatedAtField, DateTimeField, DeletedAtField, StringField, UpdatedAtField,
+    },
     db_macro::DirtyTable,
 };
 use serde::{Deserialize, Serialize};
@@ -34,20 +35,24 @@ impl Country {
         self.id.as_ref()
     }
 
-    pub fn set_game_code(&mut self, game_code: &str) {
+    pub fn set_game_code(&mut self, game_code: &str) -> &mut Self {
         self.game_code = game_code.to_string().into();
+        self
     }
 
-    pub fn set_name(&mut self, name: &str) {
+    pub fn set_name(&mut self, name: &str) -> &mut Self {
         self.name = name.to_string().into();
+        self
     }
 
-    pub fn set_short(&mut self, short: &str) {
+    pub fn set_short(&mut self, short: &str) -> &mut Self {
         self.short = short.to_string().into();
+        self
     }
 
-    pub fn set_image(&mut self, image: &str) {
+    pub fn set_image(&mut self, image: &str) -> &mut Self {
         self.image = image.to_string().into();
+        self
     }
 
     pub fn game_code(&self) -> &str {
@@ -66,15 +71,15 @@ impl Country {
         self.image.as_str()
     }
 
-    pub fn created_at(&self) -> Option<&chrono::DateTime<chrono::Utc>> {
+    pub fn created_at(&self) -> Option<&DateTimeField> {
         self.created_at.as_ref()
     }
 
-    pub fn updated_at(&self) -> Option<&chrono::DateTime<chrono::Utc>> {
+    pub fn updated_at(&self) -> Option<&DateTimeField> {
         self.updated_at.as_ref()
     }
 
-    pub fn deleted_at(&self) -> Option<&chrono::DateTime<chrono::Utc>> {
+    pub fn deleted_at(&self) -> Option<&DateTimeField> {
         self.deleted_at.as_ref()
     }
 }

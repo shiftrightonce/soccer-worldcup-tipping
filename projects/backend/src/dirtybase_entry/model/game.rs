@@ -149,16 +149,166 @@ pub struct Game {
     stage: Stage,
     year: IntegerField,
     label: StringField, // TODO: This should be a type
+    #[dirty(rel(kind = "belongs_to", column = "country_a_id"))]
     country_a: Option<Country>,
+    #[dirty(rel(kind = "belongs_to", column = "country_b_id"))]
     country_b: Option<Country>,
+    country_a_id: ArcUuid7,
+    country_b_id: ArcUuid7,
     penalty: bool,
     country_a_goals: IntegerField,
     country_b_goals: IntegerField,
     country_a_penalty_goals: IntegerField,
     country_b_penalty_goals: IntegerField,
+    #[dirty(rel(kind = "belongs_to", column = "winner_id"))]
     winner: Option<Country>,
+    winner_id: Option<ArcUuid7>,
     to_configure_on: Option<DateTimeField>,
     created_at: Option<DateTimeField>,
     updated_at: Option<DateTimeField>,
     deleted_at: Option<DateTimeField>,
+}
+
+impl Game {
+    pub fn new(year: i64, label: String, country_a: ArcUuid7, country_b: ArcUuid7) -> Self {
+        Self {
+            id: None,
+            status: GameStatus::Pending,
+            stage: Stage::Group,
+            year: year,
+            label: label.into(),
+            country_a_id: country_a,
+            country_b_id: country_b,
+            penalty: false,
+            created_at: Some(DateTimeField::default()),
+            ..Default::default()
+        }
+    }
+
+    pub fn id(&self) -> Option<&ArcUuid7> {
+        self.id.as_ref()
+    }
+
+    pub fn status(&self) -> &GameStatus {
+        &self.status
+    }
+
+    pub fn set_status(&mut self, status: GameStatus) -> &mut Self {
+        self.status = status;
+        self
+    }
+
+    pub fn stage(&self) -> &Stage {
+        &self.stage
+    }
+
+    pub fn set_stage(&mut self, stage: Stage) -> &mut Self {
+        self.stage = stage;
+        self
+    }
+
+    pub fn year(&self) -> i64 {
+        self.year
+    }
+
+    pub fn set_year(&mut self, year: i64) -> &mut Self {
+        self.year = year;
+        self
+    }
+
+    pub fn label(&self) -> &str {
+        self.label.as_str()
+    }
+
+    pub fn set_label(&mut self, label: &str) -> &mut Self {
+        self.label = label.to_string().into();
+        self
+    }
+
+    pub fn country_a(&self) -> Option<&Country> {
+        self.country_a.as_ref()
+    }
+
+    pub fn country_b(&self) -> Option<&Country> {
+        self.country_b.as_ref()
+    }
+
+    pub fn penalty(&self) -> bool {
+        self.penalty
+    }
+
+    pub fn set_penalty(&mut self, penalty: bool) -> &mut Self {
+        self.penalty = penalty;
+        self
+    }
+
+    pub fn country_a_goals(&self) -> i64 {
+        self.country_a_goals
+    }
+
+    pub fn set_country_a_goals(&mut self, country_a_goals: i64) -> &mut Self {
+        self.country_a_goals = country_a_goals;
+        self
+    }
+
+    pub fn country_b_goals(&self) -> i64 {
+        self.country_b_goals
+    }
+
+    pub fn set_country_b_goals(&mut self, country_b_goals: i64) -> &mut Self {
+        self.country_b_goals = country_b_goals;
+        self
+    }
+
+    pub fn country_a_penalty_goals(&self) -> i64 {
+        self.country_a_penalty_goals
+    }
+
+    pub fn set_country_a_penalty_goals(&mut self, goals: i64) -> &mut Self {
+        self.country_a_penalty_goals = goals;
+        self
+    }
+
+    pub fn country_b_penalty_goals(&self) -> i64 {
+        self.country_b_penalty_goals
+    }
+
+    pub fn set_country_b_penalty_goals(&mut self, goals: i64) -> &mut Self {
+        self.country_b_penalty_goals = goals;
+        self
+    }
+
+    pub fn winner(&self) -> Option<&Country> {
+        self.winner.as_ref()
+    }
+
+    pub fn winner_id(&self) -> Option<&ArcUuid7> {
+        self.winner_id.as_ref()
+    }
+
+    pub fn set_winner_id(&mut self, winner_id: ArcUuid7) -> &mut Self {
+        self.winner_id = Some(winner_id);
+        self
+    }
+
+    pub fn to_configure_on(&self) -> Option<&DateTimeField> {
+        self.to_configure_on.as_ref()
+    }
+
+    pub fn set_to_configure_on(&mut self, to_configure_on: DateTimeField) -> &mut Self {
+        self.to_configure_on = Some(to_configure_on);
+        self
+    }
+
+    pub fn created_at(&self) -> Option<&DateTimeField> {
+        self.created_at.as_ref()
+    }
+
+    pub fn updated_at(&self) -> Option<&DateTimeField> {
+        self.updated_at.as_ref()
+    }
+
+    pub fn deleted_at(&self) -> Option<&DateTimeField> {
+        self.deleted_at.as_ref()
+    }
 }
