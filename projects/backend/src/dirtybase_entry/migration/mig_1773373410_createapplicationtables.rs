@@ -79,6 +79,7 @@ impl Migration for Mig1773373410CreateApplicationTables {
                 bp.uuid_as_id(None);
                 bp.string(Game::col_name_for_label());
                 bp.integer(Game::col_name_for_year());
+                bp.integer(Game::col_name_for_count());
                 bp.uuid_fk_as(
                     Country::table_name(),
                     Game::col_name_for_country_a_id(),
@@ -111,6 +112,63 @@ impl Migration for Mig1773373410CreateApplicationTables {
                 bp.soft_deletable();
             })
             .await?;
+
+        // chat room
+        manager
+            .create_table_schema(ChatRoom::table_name(), |bp| {
+                bp.uuid_as_id(Some(ChatRoom::id_column()));
+                bp.string(ChatRoom::col_name_for_name())
+                    .set_is_nullable(true);
+                bp.string(ChatRoom::col_name_for_room_type());
+                bp.timestamps();
+                bp.soft_deletable();
+            })
+            .await?;
+        // chat room user
+        manager
+            .create_table_schema(ChatRoomUser::table_name(), |bp| {
+                bp.uuid_as_id(Some(ChatRoomUser::id_column()));
+                bp.uuid_fk_as(
+                    ChatRoom::table_name(),
+                    ChatRoomUser::col_name_for_chat_room_id(),
+                    true,
+                    Some(ChatRoom::id_column()),
+                );
+                bp.uuid_fk_as(
+                    User::table_name(),
+                    ChatRoomUser::col_name_for_user_id(),
+                    true,
+                    Some(User::id_column()),
+                );
+                bp.boolean(ChatRoomUser::col_name_for_is_admin())
+                    .default_is_false();
+                bp.timestamps();
+                bp.soft_deletable();
+            })
+            .await?;
+
+        // chat message
+        manager
+            .create_table_schema(ChatMessage::table_name(), |bp| {
+                bp.uuid_as_id(Some(ChatMessage::id_column()));
+                bp.uuid_fk_as(
+                    ChatRoom::table_name(),
+                    ChatMessage::col_name_for_chat_room_id(),
+                    true,
+                    Some(ChatRoom::id_column()),
+                );
+                bp.uuid_fk_as(
+                    User::table_name(),
+                    ChatMessage::col_name_for_user_id(),
+                    true,
+                    Some(User::id_column()),
+                );
+                bp.text(ChatMessage::col_name_for_content());
+                bp.timestamps();
+                bp.soft_deletable();
+            })
+            .await?;
+
         Ok(())
     }
 
@@ -119,6 +177,9 @@ impl Migration for Mig1773373410CreateApplicationTables {
         manager.drop_table(TipStrategy::table_name()).await?;
         manager.drop_table(Game::table_name()).await?;
         manager.drop_table(Country::table_name()).await?;
+        manager.drop_table(ChatMessage::table_name()).await?;
+        manager.drop_table(ChatRoomUser::table_name()).await?;
+        manager.drop_table(ChatRoom::table_name()).await?;
         manager.drop_table(User::table_name()).await?;
         Ok(())
     }
