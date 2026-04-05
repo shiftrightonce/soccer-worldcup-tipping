@@ -4,6 +4,9 @@ use dirtybase_contract::auth_contract::Actor;
 use dirtybase_contract::db_contract::base::manager::Manager;
 use dirtybase_contract::db_contract::migration::Migration;
 
+use crate::dirtybase_entry::model::chat_message::ChatMessage;
+use crate::dirtybase_entry::model::chat_room::ChatRoom;
+use crate::dirtybase_entry::model::chat_room_user::ChatRoomUser;
 use crate::dirtybase_entry::model::country::Country;
 use crate::dirtybase_entry::model::game::Game;
 use crate::dirtybase_entry::model::tip::Tip;
