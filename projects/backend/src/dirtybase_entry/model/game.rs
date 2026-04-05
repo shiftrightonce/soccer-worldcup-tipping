@@ -149,6 +149,7 @@ pub struct Game {
     stage: Stage,
     year: IntegerField,
     label: StringField, // TODO: This should be a type
+    count: IntegerField,
     #[dirty(rel(kind = "belongs_to", column = "country_a_id"))]
     country_a: Option<Country>,
     #[dirty(rel(kind = "belongs_to", column = "country_b_id"))]
@@ -218,6 +219,10 @@ impl Game {
 
     pub fn label(&self) -> &str {
         self.label.as_str()
+    }
+
+    pub fn count(&self) -> i64 {
+        self.count
     }
 
     pub fn set_label(&mut self, label: &str) -> &mut Self {
