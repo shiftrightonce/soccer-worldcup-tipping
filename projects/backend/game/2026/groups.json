@@ -1,0 +1,314 @@
+{
+  "a": [
+    {
+      "name": "Mexico",
+      "short": "MEX",
+      "game_code": "A1",
+      "image": "MEX_mexico.png"
+    },
+    {
+      "name": "South Africa",
+      "short": "RSA",
+      "game_code": "A2",
+      "image": "RSA_south_africa.png"
+    },
+    {
+      "name": "Korea Republic",
+      "short": "KOR",
+      "game_code": "A3",
+      "image": "KOR_korea_republic.png"
+    },
+    {
+      "name": "Czechia",
+      "short": "CZE",
+      "game_code": "A4",
+      "image": "CZE_czechia.png"
+    }
+  ],
+  "b": [
+    {
+      "name": "Canada",
+      "short": "CAN",
+      "game_code": "B1",
+      "image": "CAN_canada.png"
+    },
+    {
+      "name": "Bosnia and Herzegovina",
+      "short": "BIH",
+      "game_code": "B2",
+      "image": "BIH_bosnia_and_herzegovina.png"
+    },
+    {
+      "name": "Qatar",
+      "short": "QAT",
+      "game_code": "B3",
+      "image": "QAT_qatar.png"
+    },
+    {
+      "name": "Switzerland",
+      "short": "SUI",
+      "game_code": "B4",
+      "image": "SUI_switzerland.png"
+    }
+  ],
+  "c": [
+    {
+      "name": "Brazil",
+      "short": "BRA",
+      "game_code": "C1",
+      "image": "BRA_brazil.png"
+    },
+    {
+      "name": "Morocco",
+      "short": "MAR",
+      "game_code": "C2",
+      "image": "MAR_morocco.png"
+    },
+    {
+      "name": "Haiti",
+      "short": "HAI",
+      "game_code": "C3",
+      "image": "HAI_haiti.png"
+    },
+    {
+      "name": "Scotland",
+      "short": "SCO",
+      "game_code": "C4",
+      "image": "SCO_scotland.png"
+    }
+  ],
+  "d": [
+    {
+      "name": "USA",
+      "short": "USA",
+      "game_code": "D1",
+      "image": "USA_usa.png"
+    },
+    {
+      "name": "Paraguay",
+      "short": "PAR",
+      "game_code": "D2",
+      "image": "PAR_paraguay.png"
+    },
+    {
+      "name": "Australia",
+      "short": "AUS",
+      "game_code": "D3",
+      "image": "AUS_australia.png"
+    },
+    {
+      "name": "Türkiye",
+      "short": "TUR",
+      "game_code": "D4",
+      "image": "TUR_turkey.png"
+    }
+  ],
+  "e": [
+    {
+      "name": "Germany",
+      "short": "GER",
+      "game_code": "E1",
+      "image": "GER_germany.png"
+    },
+    {
+      "name": "Curacao",
+      "short": "CUW",
+      "game_code": "E2",
+      "image": "CUW_curacao.png"
+    },
+    {
+      "name": "Cote d'Ivoire",
+      "short": "CIV",
+      "game_code": "E3",
+      "image": "CIV_cote_d_ivoire.png"
+    },
+    {
+      "name": "Ecuador",
+      "short": "ECU",
+      "game_code": "E4",
+      "image": "ECU_ecuador.png"
+    }
+  ],
+  "f": [
+    {
+      "name": "Netherlands",
+      "short": "NED",
+      "game_code": "F1",
+      "image": "NED_netherlands.png"
+    },
+    {
+      "name": "Japan",
+      "short": "JPN",
+      "game_code": "F2",
+      "image": "JPN_japan.png"
+    },
+    {
+      "name": "Sweden",
+      "short": "SWE",
+      "game_code": "F3",
+      "image": "SWE_sweden.png"
+    },
+    {
+      "name": "Tunisia",
+      "short": "TUN",
+      "game_code": "F4",
+      "image": "TUN_tunisia.png"
+    }
+  ],
+  "g": [
+    {
+      "name": "Belgium",
+      "short": "BEL",
+      "game_code": "G1",
+      "image": "BEL_belgium.png"
+    },
+    {
+      "name": "Egypt",
+      "short": "EGY",
+      "game_code": "G2",
+      "image": "EGY_egypt.png"
+    },
+    {
+      "name": "IR Iran",
+      "short": "IRN",
+      "game_code": "G3",
+      "image": "IRN_iran.png"
+    },
+    {
+      "name": "New Zealand",
+      "short": "NZL",
+      "game_code": "G4",
+      "image": "NZL_new_zealand.png"
+    }
+  ],
+  "h": [
+    {
+      "name": "Spain",
+      "short": "ESP",
+      "game_code": "H1",
+      "image": "ESP_spain.png"
+    },
+    {
+      "name": "Cabo Verde",
+      "short": "CPV",
+      "game_code": "H2",
+      "image": "CPV_cabo_verde.png"
+    },
+    {
+      "name": "Saudi Arabia",
+      "short": "SAU",
+      "game_code": "H3",
+      "image": "SAU_saudi_arabia.png"
+    },
+    {
+      "name": "Uruguay",
+      "short": "URU",
+      "game_code": "H4",
+      "image": "URU_uruguay.png"
+    }
+  ],
+  "i": [
+    {
+      "name": "France",
+      "short": "FRA",
+      "game_code": "I1",
+      "image": "FRA_france.png"
+    },
+    {
+      "name": "Senegal",
+      "short": "SEN",
+      "game_code": "I2",
+      "image": "SEN_senegal.png"
+    },
+    {
+      "name": "Iraq",
+      "short": "IRQ",
+      "game_code": "I3",
+      "image": "IRQ_iraq.png"
+    },
+    {
+      "name": "Norway",
+      "short": "NOR",
+      "game_code": "I4",
+      "image": "NOR_norway.png"
+    }
+  ],
+  "j": [
+    {
+      "name": "Argentina",
+      "short": "ARG",
+      "game_code": "J1",
+      "image": "ARG_argentina.png"
+    },
+    {
+      "name": "Algeria",
+      "short": "ALG",
+      "game_code": "J2",
+      "image": "ALG_algeria.png"
+    },
+    {
+      "name": "Austria",
+      "short": "AUT",
+      "game_code": "J3",
+      "image": "AUT_austria.png"
+    },
+    {
+      "name": "Jordan",
+      "short": "JOR",
+      "game_code": "J4",
+      "image": "JOR_jordan.png"
+    }
+  ],
+  "k": [
+    {
+      "name": "Portugal",
+      "short": "POR",
+      "game_code": "K1",
+      "image": "POR_portugal.png"
+    },
+    {
+      "name": "Congo DR",
+      "short": "COD",
+      "game_code": "K2",
+      "image": "COD_congo_dr.png"
+    },
+    {
+      "name": "Uzbekistan",
+      "short": "UZB",
+      "game_code": "K3",
+      "image": "UZB_uzbekistan.png"
+    },
+    {
+      "name": "Colombia",
+      "short": "COL",
+      "game_code": "K4",
+      "image": "COL_colombia.png"
+    }
+  ],
+  "l": [
+    {
+      "name": "England",
+      "short": "ENG",
+      "game_code": "L1",
+      "image": "ENG_england.png"
+    },
+    {
+      "name": "Croatia",
+      "short": "CRO",
+      "game_code": "L2",
+      "image": "CRO_croatia.png"
+    },
+    {
+      "name": "Ghana",
+      "short": "GHA",
+      "game_code": "L3",
+      "image": "GHA_ghana.png"
+    },
+    {
+      "name": "Panama",
+      "short": "PAN",
+      "game_code": "L4",
+      "image": "PAN_panama.png"
+    }
+  ]
+}

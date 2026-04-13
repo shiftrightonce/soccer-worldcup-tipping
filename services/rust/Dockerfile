@@ -10,13 +10,13 @@ USER root
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install cmake -y
 
-RUN groupadd -g ${GROUPID} ${GROUP_NAME} && \
-    useradd -u ${USERID} -g ${GROUPID} -m ${USER_NAME}
+# RUN groupadd -g ${GROUPID} ${GROUP_NAME} && \
+#     useradd -u ${USERID} -g ${GROUPID} -m ${USER_NAME}
 
 
 RUN curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -p /usr/local
 
-USER ${USER_NAME}
+# USER ${USER_NAME}
 
 
 WORKDIR /projects

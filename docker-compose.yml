@@ -1,13 +1,13 @@
 services:
-  workspace:
-    build:
-      context: ./services/workspace
-    tty: true
-    volumes:
-      - ./projects:/projects
-    networks:
-      - webnetwork
-    hostname: workspace
+  # workspace:
+  #   build:
+  #     context: ./services/workspace
+  #   tty: true
+  #   volumes:
+  #     - ./projects:/projects
+  #   networks:
+  #     - webnetwork
+  #   hostname: workspace
 
   redisdb:
     build:
