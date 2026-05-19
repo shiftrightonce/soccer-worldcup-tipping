@@ -1,85 +1,124 @@
 use dirtybase_app::{
-    db::types::{
-        ArcUuid7, CreatedAtField, DateTimeField, DeletedAtField, StringField, UpdatedAtField,
+    db::{
+        base::paginate_builder::{PaginateBuilder, PaginateResult},
+        types::{ArcUuid7, CreatedAtField, DeletedAtField, NameField, StringField, UpdatedAtField},
     },
     db_macro::DirtyTable,
 };
+use dirtybase_common::anyhow;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, PartialEq, Eq, Clone, DirtyTable, Serialize, Deserialize)]
-#[dirty(soft_deletable, id_not_auto, timestamp)]
+use crate::dirtybase_entry::model::{
+    group::{CountryGroup, CountryGroupRepo, Group},
+    tournament::Tournament,
+};
+
+#[derive(Debug, Default, Clone, DirtyTable, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[dirty(soft_deletable, id_not_auto, timestamp, id_not_auto)]
+#[serde(rename_all = "camelCase")]
 pub struct Country {
-    id: Option<ArcUuid7>,
-    game_code: StringField,
-    name: StringField,
-    short: StringField,
-    image: StringField,
-    created_at: CreatedAtField,
-    updated_at: UpdatedAtField,
-    deleted_at: DeletedAtField,
+    #[ts(type = "string")]
+    pub(crate) id: Option<ArcUuid7>,
+    pub(crate) name: StringField,
+    #[ts(type = "string")]
+    pub(crate) alpha2: NameField,
+    #[ts(type = "string")]
+    pub(crate) alpha3: NameField,
+    #[serde(skip_deserializing)]
+    #[dirty(rel(
+        kind = "has_many",
+        pivot = CountryGroup,
+        pivot_through_col = "id",
+        through_col: "tournament_id",
+    ))]
+    pub(crate) tournaments: Option<Vec<Tournament>>,
+    #[serde(skip_deserializing)]
+    #[dirty(rel(
+        kind = "has_many_through",
+        pivot = CountryGroup,
+        pivot_through_col = "id",
+        through_col: "group_id",
+    ))]
+    pub(crate) groups: Option<Vec<Group>>,
+    #[serde(skip_deserializing)]
+    #[dirty(rel(kind = "has_many"))]
+    pub(crate) coutry_group: Option<Vec<CountryGroup>>,
+    #[ts(type = "Date | null")]
+    #[serde(skip_deserializing)]
+    pub(crate) created_at: CreatedAtField,
+    #[ts(type = "Date | null")]
+    #[serde(skip_deserializing)]
+    pub(crate) updated_at: UpdatedAtField,
+    #[ts(type = "Date | null")]
+    #[serde(skip_deserializing)]
+    pub(crate) deleted_at: DeletedAtField,
 }
 
 impl Country {
-    pub fn new(game_code: &str, name: &str, short: &str, image: &str) -> Self {
+    pub fn new(name: &str, alpha2: &str, alpha3: &str) -> Self {
         Self {
             id: Some(ArcUuid7::default()),
-            game_code: game_code.to_string().into(),
             name: name.to_string().into(),
-            short: short.to_string().into(),
-            image: image.to_string().into(),
+            alpha2: alpha2.to_string().into(),
+            alpha3: alpha3.to_string().into(),
             ..Default::default()
         }
     }
+}
 
-    pub fn id(&self) -> Option<&ArcUuid7> {
-        self.id.as_ref()
+impl CountryRepo {
+    pub async fn paginate_by_tournament(
+        &mut self,
+        tournament_id: ArcUuid7,
+        page: Option<PaginateBuilder>,
+    ) -> PaginateResult<Country> {
+        self.with_coutry_group_where(|query| {
+            query
+                .query_mut()
+                .is_eq(CountryGroupRepo::col_tournament_id(), tournament_id);
+        });
+        self.paginate(page).await
     }
 
-    pub fn set_game_code(&mut self, game_code: &str) -> &mut Self {
-        self.game_code = game_code.to_string().into();
-        self
+    pub async fn by_tournament_and_id(
+        &mut self,
+        tournament_id: ArcUuid7,
+        id: ArcUuid7,
+    ) -> Result<Option<Country>, anyhow::Error> {
+        self.with_coutry_group_where(|query| {
+            query
+                .query_mut()
+                .is_eq(CountryGroupRepo::col_tournament_id(), tournament_id);
+        });
+        self.by_id(id).await
     }
 
-    pub fn set_name(&mut self, name: &str) -> &mut Self {
-        self.name = name.to_string().into();
-        self
+    pub async fn paginate_still_in(
+        &mut self,
+        tournament_id: ArcUuid7,
+        page: Option<PaginateBuilder>,
+    ) -> PaginateResult<Country> {
+        self.with_coutry_group_where(|query| {
+            query
+                .query_mut()
+                .is_eq(CountryGroupRepo::col_tournament_id(), tournament_id)
+                .is_eq(CountryGroupRepo::col_is_out(), false);
+        });
+        self.paginate(page).await
     }
 
-    pub fn set_short(&mut self, short: &str) -> &mut Self {
-        self.short = short.to_string().into();
-        self
-    }
-
-    pub fn set_image(&mut self, image: &str) -> &mut Self {
-        self.image = image.to_string().into();
-        self
-    }
-
-    pub fn game_code(&self) -> &str {
-        self.game_code.as_str()
-    }
-
-    pub fn name(&self) -> &str {
-        self.name.as_str()
-    }
-
-    pub fn short(&self) -> &str {
-        self.short.as_str()
-    }
-
-    pub fn image(&self) -> &str {
-        self.image.as_str()
-    }
-
-    pub fn created_at(&self) -> Option<&DateTimeField> {
-        self.created_at.as_ref()
-    }
-
-    pub fn updated_at(&self) -> Option<&DateTimeField> {
-        self.updated_at.as_ref()
-    }
-
-    pub fn deleted_at(&self) -> Option<&DateTimeField> {
-        self.deleted_at.as_ref()
+    pub async fn paginate_out(
+        &mut self,
+        tournament_id: ArcUuid7,
+        page: Option<PaginateBuilder>,
+    ) -> PaginateResult<Country> {
+        self.with_coutry_group_where(|query| {
+            query
+                .query_mut()
+                .is_eq(CountryGroupRepo::col_tournament_id(), tournament_id)
+                .is_eq(CountryGroupRepo::col_is_out(), true);
+        });
+        self.paginate(page).await
     }
 }

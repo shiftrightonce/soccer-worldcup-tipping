@@ -7,7 +7,8 @@ use dirtybase_app::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub enum RoomType {
     #[default]
     #[serde(rename = "public")]
@@ -40,13 +41,22 @@ impl From<RoomType> for FieldValue {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize, DirtyTable)]
+#[derive(Debug, Clone, Default, Serialize, DirtyTable, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+#[dirty(timestampable, id_not_auto, soft_deletable)]
 pub struct ChatRoom {
+    #[ts(type = "string")]
     id: Option<ArcUuid7>,
+    #[ts(type = "string")]
     name: StringField,
+    #[ts(type = "string")]
     room_type: RoomType,
+    #[ts(type = "Date | null")]
     created_at: Option<DateTimeField>,
+    #[ts(type = "Date | null")]
     updated_at: Option<DateTimeField>,
+    #[ts(type = "Date | null")]
     deleted_at: Option<DateTimeField>,
 }
 

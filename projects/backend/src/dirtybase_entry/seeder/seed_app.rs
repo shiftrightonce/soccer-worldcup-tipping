@@ -1,18 +1,22 @@
+use std::collections::HashMap;
+
 use dirtybase_contract::app_contract::Context;
 use dirtybase_contract::auth_contract::storage::{PermStorageProvider, PermissionStorage};
-use dirtybase_contract::auth_contract::{ActorPayload, AuthUserStatus, PersistActorPayload};
+use dirtybase_contract::auth_contract::{
+    ActorPayload, ActorRole, AuthUserStatus, FetchRolePayload, PersistActorPayload,
+    PersistActorRolePayload, Role,
+};
 use dirtybase_contract::db_contract::base::manager::Manager;
-use dirtybase_contract::prelude::*;
 
-use crate::dirtybase_entry::model::country::Country;
 use crate::dirtybase_entry::model::user::User;
+use crate::dirtybase_entry::{ADMIN_ROLE, PLAYER_ROLE};
 
 pub(crate) async fn seed(manager: Manager, context: Context) {
     seed_users(&manager, &context).await;
-    seed_countries(&manager).await
 }
 
 async fn seed_users(manager: &Manager, context: &Context) {
+    let roles = seed_roles(context).await;
     let mut user_repo = User::repo_instance(&manager);
     let auth_storage = context
         .get::<PermStorageProvider>()
@@ -38,31 +42,59 @@ async fn seed_users(manager: &Manager, context: &Context) {
             .await
             .expect("could not create user's actor")
         {
-            let user = User::new(&email, actor.id().cloned().unwrap());
+            let actor_id = actor.id().cloned().unwrap();
+            let user = User::new(&email, actor_id.clone());
             user_repo.insert(user).await.expect("could not create user");
+            let actor_role = PersistActorRolePayload::Save {
+                record: ActorRole::new(
+                    actor_id,
+                    roles
+                        .get(if u == 1 { ADMIN_ROLE } else { PLAYER_ROLE })
+                        .cloned()
+                        .unwrap()
+                        .id()
+                        .cloned()
+                        .unwrap(),
+                ),
+            };
+            auth_storage
+                .save_actor_role(actor_role)
+                .await
+                .expect("could not save actor role");
         }
     }
 }
 
-async fn seed_countries(manager: &Manager) {
-    let group_total = 12;
-    let mut group = 'A';
+async fn seed_roles(context: &Context) -> HashMap<String, Role> {
+    let auth_storage = context
+        .get::<PermStorageProvider>()
+        .await
+        .expect("could not get auth storage");
 
-    for _ in 1..=group_total {
-        let mut country_repo = Country::repo_instance(&manager);
-        for group_member in 1..=4 {
-            let game_code = format!("{}{}", group, group_member);
-            let name = dirtybase_helper::random::random_string(8);
-            let short = dirtybase_helper::random::random_string(3).to_uppercase();
-            let image = dirtybase_helper::random::random_string(10);
-
-            let country = Country::new(&game_code, &name, &short, &image);
-            _ = country_repo
-                .insert(country)
-                .await
-                .expect("could not create mock country data");
-        }
-
-        group = std::char::from_u32(group as u32 + 1).unwrap();
+    let mut roles = HashMap::new();
+    if let Ok(Some(r)) = auth_storage
+        .fetch_role(
+            FetchRolePayload::ByName {
+                name: ADMIN_ROLE.to_string().into(),
+            },
+            None,
+        )
+        .await
+    {
+        roles.insert(r.name().to_string(), r);
     }
+
+    if let Ok(Some(r)) = auth_storage
+        .fetch_role(
+            FetchRolePayload::ByName {
+                name: PLAYER_ROLE.to_string().into(),
+            },
+            None,
+        )
+        .await
+    {
+        roles.insert(r.name().to_string(), r);
+    }
+
+    roles
 }

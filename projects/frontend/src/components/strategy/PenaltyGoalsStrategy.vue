@@ -1,0 +1,35 @@
+<template>
+  <div v-if="hasCompleted" class="row">
+    <div class="col">
+      Country A {{ model.entry.country_a_goals }}
+    </div>
+    <div class="col">
+      Country B {{ model.entry.country_b_goals }}
+    </div>
+  </div>
+  <div v-else class="row">
+    <div class="col q-pr-sm">
+       <q-input outlined type="number" v-model="model.entry.country_a_goals" label="Country A" />
+    </div>
+    <div class="col q-pl-sm">
+       <q-input outlined type="number" v-model="model.entry.country_b_goals" label="Country B" />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { TipStrategy } from 'src/api/TipStrategy';
+
+const props = defineProps<{tipStrategy: TipStrategy}>()
+const [model, _] = defineModel<{kind: "penalty_goals", entry: {country_a_goals: number, country_b_goals: number}}>({required: true })
+const hasCompleted = props.tipStrategy?.completed // or end date has passed
+
+if (!model.value.entry.country_a_goals) {
+  model.value.entry.country_a_goals = 0
+}
+
+if (!model.value.entry.country_b_goals) {
+  model.value.entry.country_b_goals = 0
+}
+
+</script>

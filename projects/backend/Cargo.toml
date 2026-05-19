@@ -4,33 +4,66 @@ version = "0.1.0"
 edition = "2024"
 
 [patch.crates-io]
-dirtybase_app = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_app" }
-dirtybase_3rd_client = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_3rd_client" }
-dirtybase_auth = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_auth" }
-dirtybase_cache = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_cache" }
-dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
-dirtybase_contract = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_contract" }
-dirtybase_cron = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_cron" }
-dirtybase_db = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_db" }
-dirtybase_db_macro = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_db_macro" }
-dirtybase_encrypt = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_encrypt" }
-dirtybase_helper = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_helper" }
-# dirtybase_lock = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_lock" }
-dirtybase_mail = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_mail" }
-# dirtybase_multitenant = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_multitenant" }
-# dirtybase_queue = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_queue" }
-dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
-dirtybase_session = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_session" }
+# dirtybase_app = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_app" }
+# dirtybase_3rd_client = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_3rd_client" }
+# dirtybase_auth = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_auth" }
+# dirtybase_cache = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_cache" }
+# dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
+# dirtybase_contract = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_contract" }
+# dirtybase_cron = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_cron" }
+# dirtybase_db = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_db" }
+# dirtybase_db_macro = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_db_macro" }
+# dirtybase_encrypt = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_encrypt" }
+# dirtybase_helper = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_helper" }
+# # dirtybase_lock = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_lock" }
+# dirtybase_mail = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_mail" }
+# # dirtybase_multitenant = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_multitenant" }
+# # dirtybase_queue = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_queue" }
+# dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
+# dirtybase_session = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_session" }
+
+# for testing only start
+dirtybase_contract = { path = "../../../dirtybase/contract" }
+dirtybase_auth = { path = "../../../dirtybase/packages/auth" }
+dirtybase_cache = { path = "../../../dirtybase/packages/cache" }
+dirtybase_common = { path = "../../../dirtybase/packages/common" }
+dirtybase_cron = { path = "../../../dirtybase/packages/cron" }
+dirtybase_db = { path = "../../../dirtybase/packages/db" }
+dirtybase_db_macro = { path = "../../../dirtybase/packages/db_macro" }
+dirtybase_encrypt = { path = "../../../dirtybase/packages/encrypt" }
+dirtybase_helper = { path = "../../../dirtybase/packages/helper" }
+dirtybase_mail = { path = "../../../dirtybase/packages/mail" }
+dirtybase_realtime = { path = "../../../dirtybase/packages/realtime" }
+dirtybase_session = { path = "../../../dirtybase/packages/session" }
+dirtybase_3rd_client = { path = "../../../dirtybase/packages/3rd_client" }
+# for testing only ends
 
 [dependencies]
-dirtybase_contract = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_contract" }
-dirtybase_app = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_app", features = [
+# dirtybase_contract = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_contract" }
+# dirtybase_app = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_app", features = [
+#   "full",
+# ] }
+# dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
+# dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
+
+# for testing start
+dirtybase_contract = { path = "../../../dirtybase/contract" }
+dirtybase_app = { path = "../../../dirtybase/packages/app", features = [
   "full",
 ] }
-dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
-dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
-tokio = { version = "1.50.0", features = ["full"] }
+dirtybase_realtime = { path = "../../../dirtybase/packages/realtime" }
+dirtybase_common = { path = "../../../dirtybase/packages/common" }
+# for testing end 
+
+tokio = { version = "1.52.3", features = ["full"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 tracing = "0.1.44"
 tracing-subscriber = "0.3.23"
+ts-rs = { version = "12.0.1", features = [
+  "default",
+  "uuid",
+  "chrono",
+  "format",
+  "no-serde-warnings",
+] }

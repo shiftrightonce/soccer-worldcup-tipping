@@ -2,33 +2,38 @@ use std::fmt::Display;
 
 use dirtybase_app::{
     db::{
+        base::paginate_builder::{PaginateBuilder, PaginateResult},
         field_values::FieldValue,
-        types::{DateTimeField, IntegerField, StringField},
+        types::{
+            CreatedAtField, DateTimeField, DeletedAtField, IntegerField, LabelField, UpdatedAtField,
+        },
     },
     db_macro::DirtyTable,
 };
+use dirtybase_common::anyhow;
 use dirtybase_contract::db_contract::types::ArcUuid7;
 use serde::{Deserialize, Serialize};
 
-use crate::dirtybase_entry::model::country::Country;
+use crate::dirtybase_entry::model::{country::Country, tournament::Tournament};
 
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub enum GameStatus {
     #[default]
-    #[serde(alias = "pending")]
+    #[serde(rename = "pending")]
     /// The game is not ready for anything
     Pending,
     /// The game if open fo tipping
-    #[serde(alias = "open")]
+    #[serde(rename = "open")]
     Open,
     /// The game is closed for tipping
-    #[serde(alias = "closed")]
+    #[serde(rename = "closed")]
     Closed,
     /// The game has been scored
-    #[serde(alias = "scored")]
+    #[serde(rename = "scored")]
     Scored,
     /// The game has been completed
-    #[serde(alias = "completed")]
+    #[serde(rename = "completed")]
     Completed,
 }
 
@@ -76,22 +81,23 @@ impl From<GameStatus> for FieldValue {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, ts_rs::TS)]
+#[ts(export)]
 pub enum Stage {
     #[default]
-    #[serde(alias = "group")]
+    #[serde(rename = "group")]
     Group,
-    #[serde(alias = "round_32")]
+    #[serde(rename = "round_32")]
     Round32,
-    #[serde(alias = "round_16")]
+    #[serde(rename = "round_16")]
     Round16,
-    #[serde(alias = "round_8")]
+    #[serde(rename = "round_8")]
     Round8,
-    #[serde(alias = "round_4")]
+    #[serde(rename = "round_4")]
     Round4,
-    #[serde(alias = "third_place")]
+    #[serde(rename = "third_place")]
     ThirdPlace,
-    #[serde(alias = "final")]
+    #[serde(rename = "final")]
     Final,
 }
 
@@ -141,42 +147,61 @@ impl From<Stage> for FieldValue {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, DirtyTable)]
-#[dirty(table = "games", timestamps, soft_delete)]
+#[derive(Debug, Clone, Default, Serialize, DirtyTable, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+#[dirty(table = "games", timestamps, soft_delete, id_not_auto)]
 pub struct Game {
-    id: Option<ArcUuid7>,
-    status: GameStatus,
-    stage: Stage,
-    year: IntegerField,
-    label: StringField, // TODO: This should be a type
-    count: IntegerField,
+    #[ts(type = "string")]
+    pub(crate) id: Option<ArcUuid7>,
+    pub(crate) status: GameStatus,
+    pub(crate) stage: Stage,
+    #[ts(type = "string")]
+    pub(crate) label: LabelField,
+    pub(crate) count: IntegerField,
+    #[dirty(rel(kind = "belongs_to"))]
+    pub(crate) tournament: Option<Tournament>,
+    #[ts(type = "string")]
+    pub(crate) tournament_id: ArcUuid7,
     #[dirty(rel(kind = "belongs_to", column = "country_a_id"))]
-    country_a: Option<Country>,
+    pub(crate) country_a: Option<Country>,
     #[dirty(rel(kind = "belongs_to", column = "country_b_id"))]
-    country_b: Option<Country>,
-    country_a_id: ArcUuid7,
-    country_b_id: ArcUuid7,
-    penalty: bool,
-    country_a_goals: IntegerField,
-    country_b_goals: IntegerField,
-    country_a_penalty_goals: IntegerField,
-    country_b_penalty_goals: IntegerField,
+    pub(crate) country_b: Option<Country>,
+    #[ts(type = "string")]
+    pub(crate) country_a_id: ArcUuid7,
+    #[ts(type = "string")]
+    pub(crate) country_b_id: ArcUuid7,
+    pub(crate) penalty: bool,
+    pub(crate) country_a_goals: IntegerField,
+    pub(crate) country_b_goals: IntegerField,
+    pub(crate) country_a_penalty_goals: IntegerField,
+    pub(crate) country_b_penalty_goals: IntegerField,
     #[dirty(rel(kind = "belongs_to", column = "winner_id"))]
-    winner: Option<Country>,
-    winner_id: Option<ArcUuid7>,
-    to_configure_on: Option<DateTimeField>,
-    created_at: Option<DateTimeField>,
-    updated_at: Option<DateTimeField>,
-    deleted_at: Option<DateTimeField>,
+    pub(crate) winner: Option<Country>,
+    #[ts(type = "string")]
+    pub(crate) winner_id: Option<ArcUuid7>,
+    #[ts(type = "Date | null")]
+    pub(crate) to_configure_on: Option<DateTimeField>,
+    #[ts(type = "Date | null")]
+    pub(crate) created_at: CreatedAtField,
+    #[ts(type = "Date | null")]
+    pub(crate) updated_at: UpdatedAtField,
+    #[ts(type = "Date | null")]
+    pub(crate) deleted_at: DeletedAtField,
 }
 
 impl Game {
-    pub fn new(year: i64, label: String, country_a: ArcUuid7, country_b: ArcUuid7) -> Self {
+    pub fn new(
+        tournament_id: ArcUuid7,
+        label: String,
+        country_a: ArcUuid7,
+        country_b: ArcUuid7,
+    ) -> Self {
         Self {
             id: None,
             status: GameStatus::Pending,
             stage: Stage::Group,
-            year: year,
+            tournament_id: tournament_id,
             label: label.into(),
             country_a_id: country_a,
             country_b_id: country_b,
@@ -205,15 +230,6 @@ impl Game {
 
     pub fn set_stage(&mut self, stage: Stage) -> &mut Self {
         self.stage = stage;
-        self
-    }
-
-    pub fn year(&self) -> i64 {
-        self.year
-    }
-
-    pub fn set_year(&mut self, year: i64) -> &mut Self {
-        self.year = year;
         self
     }
 
@@ -322,5 +338,25 @@ impl Game {
 
     pub fn deleted_at(&self) -> Option<&DateTimeField> {
         self.deleted_at.as_ref()
+    }
+}
+
+impl GameRepo {
+    pub async fn by_tournament_and_id(
+        &mut self,
+        tournament_id: ArcUuid7,
+        id: ArcUuid7,
+    ) -> Result<Option<Game>, anyhow::Error> {
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.by_id(id).await
+    }
+
+    pub async fn paginate_by_tournament(
+        &mut self,
+        tournament_id: ArcUuid7,
+        page: Option<PaginateBuilder>,
+    ) -> PaginateResult<Game> {
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.paginate(page).await
     }
 }
