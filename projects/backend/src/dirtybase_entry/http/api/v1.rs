@@ -1,9 +1,12 @@
 mod country_controller;
+mod country_group_controller;
 mod game_controller;
+mod group_controller;
 mod tip_controller;
 mod tip_strategy_controller;
 mod tournament_controller;
 mod user_controller;
+
 use dirtybase_contract::prelude::RouterManager;
 
 pub fn register_routes(manager: &mut RouterManager) {
@@ -33,6 +36,28 @@ pub fn register_routes(manager: &mut RouterManager) {
                 .get_x("/{id}", country_controller::get_handler);
         });
 
+        // groups
+        router.nest("/groups", |router| {
+            router.get_x("/", group_controller::all_handler);
+        });
+
+        // country groups
+        router.nest("/country-groups/{tournament_id}", |router| {
+            router
+                .get_x("/", country_group_controller::list_handler)
+                .get_x("/all", country_group_controller::all_handler)
+                .post_x_with_middleware(
+                    "/",
+                    country_group_controller::create_handler,
+                    ["can:country-group:create"],
+                )
+                .put_x_with_middleware(
+                    "/{id}",
+                    country_group_controller::update_handler,
+                    ["can:country-group:update"],
+                );
+        });
+
         // Strategies
         router.nest("/strategies/{tournament_id}", |router| {
             router
@@ -60,6 +85,8 @@ pub fn register_routes(manager: &mut RouterManager) {
         router.nest("/games/{tournament_id}", |router| {
             router
                 .get_x("/", game_controller::list_handler)
+                .get_x("/all", game_controller::all_handler)
+                .get_x("/by-status/{status}", game_controller::by_status_handler)
                 .get_x("/{id}", game_controller::get_handler)
                 .post_x_with_middleware("/", game_controller::create_handler, ["can:games:create"])
                 .put_x_with_middleware(

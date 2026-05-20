@@ -11,6 +11,7 @@ use dirtybase_contract::cli_contract::prelude::ArgMatches;
 use dirtybase_contract::prelude::*;
 
 use crate::dirtybase_entry::model::country::CountryRepo;
+use crate::dirtybase_entry::model::group::{CountryGroupRepo, GroupRepo};
 use crate::dirtybase_entry::model::tip_strategy::TipStrategyRepo;
 use crate::dirtybase_entry::model::tournament::TournamentRepo;
 use crate::dirtybase_entry::model::user::UserRepo;
@@ -43,6 +44,16 @@ impl dirtybase_contract::ExtensionSetup for Extension {
         ContextResourceManager::scoped("country_repo", |ctx| async move {
             let manager = ctx.get::<Manager>().await?;
             Ok(CountryRepo::new(&manager))
+        })
+        .await;
+        ContextResourceManager::scoped("group_repo", |ctx| async move {
+            let manager = ctx.get::<Manager>().await?;
+            Ok(GroupRepo::new(&manager))
+        })
+        .await;
+        ContextResourceManager::scoped("country_group_repo", |ctx| async move {
+            let manager = ctx.get::<Manager>().await?;
+            Ok(CountryGroupRepo::new(&manager))
         })
         .await;
     }

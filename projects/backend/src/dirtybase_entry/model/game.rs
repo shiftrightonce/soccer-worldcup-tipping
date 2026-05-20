@@ -158,6 +158,7 @@ pub struct Game {
     pub(crate) stage: Stage,
     #[ts(type = "string")]
     pub(crate) label: LabelField,
+    #[ts(type = "number")]
     pub(crate) count: IntegerField,
     #[dirty(rel(kind = "belongs_to"))]
     pub(crate) tournament: Option<Tournament>,
@@ -172,9 +173,13 @@ pub struct Game {
     #[ts(type = "string")]
     pub(crate) country_b_id: ArcUuid7,
     pub(crate) penalty: bool,
+    #[ts(type = "number")]
     pub(crate) country_a_goals: IntegerField,
+    #[ts(type = "number")]
     pub(crate) country_b_goals: IntegerField,
+    #[ts(type = "number")]
     pub(crate) country_a_penalty_goals: IntegerField,
+    #[ts(type = "number")]
     pub(crate) country_b_penalty_goals: IntegerField,
     #[dirty(rel(kind = "belongs_to", column = "winner_id"))]
     pub(crate) winner: Option<Country>,
@@ -237,7 +242,7 @@ impl Game {
         self.label.as_str()
     }
 
-    pub fn count(&self) -> i64 {
+    pub fn count(&self) -> IntegerField {
         self.count
     }
 
@@ -349,6 +354,24 @@ impl GameRepo {
     ) -> Result<Option<Game>, anyhow::Error> {
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.by_id(id).await
+    }
+
+    pub async fn all_by_tournament(
+        &mut self,
+        tournament_id: ArcUuid7,
+    ) -> Result<Vec<Game>, anyhow::Error> {
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.get().await
+    }
+
+    pub async fn by_tournament_and_status(
+        &mut self,
+        tournament_id: ArcUuid7,
+        status: GameStatus,
+    ) -> Result<Vec<Game>, anyhow::Error> {
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.builder.is_eq(Self::col_status(), status);
+        self.get().await
     }
 
     pub async fn paginate_by_tournament(

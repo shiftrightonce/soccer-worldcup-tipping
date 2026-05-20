@@ -103,7 +103,7 @@ pub(crate) struct TipStrategyPayload {
     #[ts(type = "string")]
     label: LabelField,
     description: ArcStrField,
-    #[ts(type = "string")]
+    #[ts(type = "string | null")]
     game_id: Option<ArcUuid7>,
     #[ts(type = "string")]
     opens_at: DateTimeField,
@@ -118,7 +118,7 @@ pub(crate) struct TipStrategyPayload {
 impl From<TipStrategyPayload> for TipStrategy {
     fn from(value: TipStrategyPayload) -> Self {
         Self {
-            id: None,
+            id: Some(ArcUuid7::default()),
             tournament: None,
             tournament_id: value
                 .tournament_id

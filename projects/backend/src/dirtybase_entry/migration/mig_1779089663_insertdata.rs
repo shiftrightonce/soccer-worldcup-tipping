@@ -4,7 +4,10 @@ use dirtybase_contract::app_contract::Context;
 use dirtybase_contract::db_contract::base::manager::Manager;
 use dirtybase_contract::db_contract::migration::Migration;
 
-use crate::dirtybase_entry::model::country::{Country, CountryRepo};
+use crate::dirtybase_entry::model::{
+    country::{Country, CountryRepo},
+    group::{Group, GroupRepo},
+};
 
 pub struct Mig1779089663InsertData;
 
@@ -12,10 +15,15 @@ pub struct Mig1779089663InsertData;
 impl Migration for Mig1779089663InsertData {
     async fn up(&self, manager: &Manager, _ctx: &Context) -> Result<(), anyhow::Error> {
         let mut repo = CountryRepo::new(manager);
-        for mut a_country in countries() {
-            a_country.id = Some(ArcUuid7::default());
+        for a_country in countries() {
             _ = repo.insert(a_country).await?;
         }
+
+        let mut repo = GroupRepo::new(manager);
+        for a_group in groups() {
+            _ = repo.insert(a_group).await?;
+        }
+
         Ok(())
     }
 
@@ -521,7 +529,25 @@ fn countries() -> Vec<Country> {
 ]"#;
 
     match serde_json::from_str::<Vec<Country>>(data) {
-        Ok(list) => list,
+        Ok(list) => list
+            .into_iter()
+            .map(|mut entry| {
+                entry.id = Some(ArcUuid7::default());
+                entry
+            })
+            .collect(),
         Err(_) => Vec::new(),
     }
+}
+
+fn groups() -> Vec<Group> {
+    let mut list = Vec::new();
+    let start = 65;
+    for i in start..=90 {
+        if let Some(ch) = char::from_u32(i) {
+            list.push(Group::new(&format!("Group {ch}")));
+        }
+    }
+
+    list
 }

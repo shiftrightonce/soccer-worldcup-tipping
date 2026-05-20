@@ -1,9 +1,13 @@
 use dirtybase_app::{
-    db::types::{
-        ArcUuid7, CreatedAtField, DeletedAtField, IntegerField, StringField, UpdatedAtField,
+    db::{
+        base::paginate_builder::{PaginateBuilder, PaginateResult},
+        types::{
+            ArcUuid7, CreatedAtField, DeletedAtField, IntegerField, StringField, UpdatedAtField,
+        },
     },
     db_macro::DirtyTable,
 };
+use dirtybase_common::anyhow;
 use serde::Serialize;
 
 use crate::dirtybase_entry::model::{country::Country, tournament::Tournament};
@@ -22,6 +26,16 @@ pub struct Group {
     pub(crate) updated_at: UpdatedAtField,
     #[ts(type = "Date")]
     pub(crate) deleted_at: DeletedAtField,
+}
+
+impl Group {
+    pub fn new(name: &str) -> Self {
+        Self {
+            id: Some(ArcUuid7::default()),
+            name: name.to_string().into(),
+            ..Default::default()
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, DirtyTable, Serialize, ts_rs::TS)]
@@ -51,4 +65,25 @@ pub struct CountryGroup {
     pub(crate) updated_at: UpdatedAtField,
     #[ts(type = "Date | null")]
     pub(crate) deleted_at: DeletedAtField,
+}
+
+impl CountryGroupRepo {
+    pub async fn paginate_by_tournament(
+        &mut self,
+        tournament_id: ArcUuid7,
+        page: Option<PaginateBuilder>,
+    ) -> PaginateResult<CountryGroup> {
+        self.with_country().with_group().with_tournament();
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.paginate(page).await
+    }
+
+    pub async fn all_by_tournament(
+        &mut self,
+        tournament_id: ArcUuid7,
+    ) -> Result<Vec<CountryGroup>, anyhow::Error> {
+        self.with_country().with_group().with_tournament();
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.get().await
+    }
 }
