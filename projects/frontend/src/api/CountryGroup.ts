@@ -12,7 +12,7 @@ export type CountryGroup = {
   country: Country | null;
   countryId: string;
   isOut: boolean;
-  points: bigint;
+  points: number;
   createdAt: Date | null;
   updatedAt: Date | null;
   deletedAt: Date | null;

@@ -1,16 +1,15 @@
 <template>
-
   <q-page class="q-pa-md">
     <div class="row">
       <div class="col-10">
-        <div class="text-h6">Tip Strategies</div>
-        <div class="text-body2 text-muted-foreground">Manage Tip Strategies</div>
+        <div class="text-h6">Games</div>
+        <div class="text-body2 text-muted-foreground">Manage Games</div>
       </div>
       <div class="col-2">
-        <q-btn color="primary" icon="add" outline no-caps label="New Tip Strategy"
-          :to="{ name: 'manage-strategy' }"></q-btn>
+        <q-btn color="primary" icon="add" outline no-caps label="New Game" :to="{ name: 'manage-game' }"></q-btn>
       </div>
     </div>
+
     <div class="row">
       <div class="col q-pa-sm">
         <q-table title="Country Groups" :columns="columns" :rows="result" row-key="id">
@@ -48,24 +47,19 @@
 
 <script setup lang="ts">
 import type { QTableColumn } from 'quasar';
+import type { Country } from 'src/api/Country';
 import type { Game } from 'src/api/Game';
-import type { Group } from 'src/api/Group';
-import type { StrategyType } from 'src/api/StrategyType';
-import type { TipStrategy } from 'src/api/TipStrategy';
-import type { Tournament } from 'src/api/Tournament';
-import TipStrategyClient from 'src/api/v1/clients/StrategyClient'
-import { strategyTypeKeyValue } from 'src/general/lists';
+import GameClient from 'src/api/v1/clients/GameClient';
 import { useUserStore } from 'src/stores/user-store';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-
-const strategyTypeKV = strategyTypeKeyValue;
+const result = ref<Array<Game>>([])
+const router = useRouter()
 const props = defineProps<{ tournamentId: string }>()
 const userStore = useUserStore()
-const client = TipStrategyClient(userStore.authHeader(), props.tournamentId)
-const result = ref<Array<TipStrategy>>([])
-const router = useRouter()
+const client = GameClient(userStore.authHeader(), props.tournamentId)
+
 const columns = [
   {
     name: 'id',
@@ -77,65 +71,64 @@ const columns = [
     name: 'label',
     label: 'Label',
     field: 'label',
-    align: 'left'
-  },
-  {
-    name: 'completed',
-    label: 'Is Completed',
-    field: 'completed',
-    align: 'left'
-  },
-  {
-    name: 'tournament',
-    label: 'Tournament',
-    field: 'tournament',
     align: 'left',
-    format: (val: Tournament, _row: TipStrategy) => val.label
   },
   {
-    name: 'game',
-    label: 'Game',
-    field: 'game',
+    name: 'status',
+    label: 'Status',
+    field: 'status',
     align: 'left',
-    format: (val: Game, _row: TipStrategy) => val ? val.label : ''
   },
   {
-    name: 'group',
-    label: 'Group',
-    field: 'group',
+    name: 'count',
+    label: 'Count',
+    field: 'count',
     align: 'left',
-    format: (val: Group, _row: TipStrategy) => val ? val.name : ''
   },
   {
-    name: 'strategyTypes',
-    label: 'Strategy Types',
-    field: 'strategyTypes',
+    name: 'countryA',
+    label: 'country A',
+    field: 'countryA',
     align: 'left',
-    format: (val: StrategyType[], _row: TipStrategy) => val ? val.map((e) => strategyTypeKV[e]).join(',') : ''
+    format: (val: Country, _: Game) => val.name
+  },
+  {
+    name: 'countryB',
+    label: 'country B',
+    field: 'countryB',
+    align: 'left',
+    format: (val: Country, _: Game) => val.name
+  },
+  {
+    name: 'toConfigureOn',
+    label: 'To Configure On',
+    field: 'toConfigureOn',
+    align: 'left',
   },
   {
     name: 'createdAt',
     label: 'Created At',
     field: 'createdAt',
-    format: (val: string | null, _row: TipStrategy) => (val ? new Date(val).toLocaleString() : ''),
+    format: (val: string | null, _row: Game) => (val ? new Date(val).toLocaleString() : ''),
   },
   {
     name: 'updatedAt',
     label: 'Updated At',
     field: 'updatedAt',
-    format: (val: string | null, _row: TipStrategy) => (val ? new Date(val).toLocaleString() : ''),
+    format: (val: string | null, _row: Game) => (val ? new Date(val).toLocaleString() : ''),
   },
   {
     name: 'deleted At',
     label: 'Deleted At',
     field: 'deletedAt',
-    format: (val: string | null, _row: TipStrategy) => (val ? new Date(val).toLocaleString() : ''),
+    format: (val: string | null, _row: Game) => (val ? new Date(val).toLocaleString() : ''),
   },
+
 ] as QTableColumn[];
 
 const onEditClick = async (id: string) => {
   await router.push({
-    name: 'manage-strategy',
+    name: 'manage-game',
     params: {
       tournamentId: props.tournamentId,
       id
@@ -145,14 +138,13 @@ const onEditClick = async (id: string) => {
 
 onMounted(async () => {
   try {
-    const response = await client.all()
+    const params = new URLSearchParams({ _sort: "-count" })
+    const response = await client.all(params)
     if (response.data) {
-      console.log('data....', response.data)
       result.value = response.data
     }
   } catch (e) {
     console.error(e)
   }
-});
-
+})
 </script>

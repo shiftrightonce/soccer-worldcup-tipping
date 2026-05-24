@@ -1,35 +1,30 @@
 <template>
-    <q-page class="q-pa-md">
-      <div class="row">
-        <div class="col-10 col-xs-12">
-          <div class="text-h6">Strategy Label goes here</div>
-          <div class="text-body2 text-muted-foreground">Strategy Description goes here</div>
-        </div>
+  <q-page class="q-pa-md">
+    <div class="row">
+      <div class="col-10 col-xs-12">
+        <div class="text-h6">Strategy Label goes here</div>
+        <div class="text-body2 text-muted-foreground">Strategy Description goes here</div>
       </div>
-       <q-list bordered>
-        <q-expansion-item
-          v-for="type in tipStrategy.strategyTypes"
-          :key="type"
-          group="somegroup"
-          icon="explore"
-          :label=strategyTypeKeyValue[type]
-          default-opened
-        >
+    </div>
+    <q-list bordered>
+      <q-expansion-item v-for="type in tipStrategy.strategyTypes" :key="type" group="somegroup" icon="explore"
+        :label=strategyTypeKeyValue[type] default-opened>
         <q-card>
           <q-card-section class="q-pa-md">
-            {{  strategyData[type] }}
-            <component :is="strategyComponents[type]" v-model="strategyData[type]" :tip-strategy="tipStrategy"></component>
+            {{ strategyData[type] }}
+            <component :is="strategyComponents[type]" v-model="strategyData[type]" :tip-strategy="tipStrategy">
+            </component>
           </q-card-section>
         </q-card>
-        </q-expansion-item>
-       </q-list>
-    </q-page>
+      </q-expansion-item>
+    </q-list>
+  </q-page>
 </template>
 
 <script setup lang="ts">
 import { strategyTypeKeyValue, strategyTypeList } from 'src/general/lists';
 import { strategyComponents } from 'src/components/strategy/.'
-import {strategiesToKeyValue} from 'src/general/strategy_helper'
+import { strategiesToKeyValue } from 'src/general/strategy_helper'
 import { ref, watch } from 'vue';
 import type { TipStrategy } from 'src/api/TipStrategy';
 import type { Tip } from 'src/api/Tip';
@@ -38,28 +33,30 @@ import { useCountryStore } from 'src/stores/country-store';
 const props = defineProps<{ tournamentId: string, tipStrategyId: string, id?: string }>()
 // test data for now
 const countries = useCountryStore().countriesList
-const tipStrategy= ref<TipStrategy>({
+const tipStrategy = ref<TipStrategy>({
   id: props.tipStrategyId,
   tournamentId: props.tournamentId,
   gameId: 'game1',
+  groupId: null,
   label: 'Dummy Tip Strategy',
   description: 'Dummy Tip Strategy',
+  group: null,
   game: {
     id: 'game1',
-    count: BigInt(1),
+    count: 1,
     countryA: countries[0] || null,
     countryB: countries[1] || null,
-    countryAGoals: BigInt(0),
-    countryBGoals: BigInt(0),
-    countryAId: countries[0]?.id || '' ,
+    countryAGoals: 0,
+    countryBGoals: 0,
+    countryAId: countries[0]?.id || '',
     countryBId: countries[1]?.id || '',
     stage: 'group',
     label: `${countries[0]?.name} vs ${countries[1]?.name}`,
-    countryAPenaltyGoals: BigInt(0),
-    countryBPenaltyGoals: BigInt(0),
-    createdAt: '',
-    deletedAt: '',
-    updatedAt: '',
+    countryAPenaltyGoals: 0,
+    countryBPenaltyGoals: 0,
+    createdAt: null,
+    deletedAt: null,
+    updatedAt: null,
     penalty: false,
     status: 'open',
     toConfigureOn: null,
@@ -90,7 +87,7 @@ const tip = ref<Tip>({
   tipStrategy: null,
   tournament: null,
   strategies: tipStrategy.value.strategyTypes.map((type) => {
-      return JSON.parse(JSON.stringify(strategiesToKeyValue[type]))
+    return JSON.parse(JSON.stringify(strategiesToKeyValue[type]))
   }),
   createdAt: null,
   updatedAt: null,
@@ -98,17 +95,17 @@ const tip = ref<Tip>({
 })
 
 // built from existing data or new
-const strategyData =  ref(Object.fromEntries(tipStrategy.value.strategyTypes.map((type) => {
-      return JSON.parse(JSON.stringify([type, strategiesToKeyValue[type]]))
-  })))
+const strategyData = ref(Object.fromEntries(tipStrategy.value.strategyTypes.map((type) => {
+  return JSON.parse(JSON.stringify([type, strategiesToKeyValue[type]]))
+})))
 
 if (props.id) {
-    strategyData.value = Object.fromEntries(tip.value.strategies.map((entry) => [entry.kind, entry]))
+  strategyData.value = Object.fromEntries(tip.value.strategies.map((entry) => [entry.kind, entry]))
 }
 
 
 watch(strategyData, (_, newData) => {
-  console.log('new data', {...newData })
+  console.log('new data', { ...newData })
 })
 
 

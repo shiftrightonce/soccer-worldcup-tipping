@@ -3,7 +3,7 @@ import { LoadingBar } from 'quasar';
 import { computed, ref } from 'vue';
 
 LoadingBar.setDefaults({
-  hijackFilter(url) {
+  hijackFilter (url) {
     // Only hijack api requests
     return url.indexOf('/api/') > 1;
   },
@@ -29,31 +29,31 @@ export const useLayoutStore = defineStore('layoutStore', {
     isRightDrawerEnabled: () => true,
   },
   actions: {
-    setTitle(title: string) {
+    setTitle (title: string) {
       this.layoutTitle = title;
     },
-    activeLeftDrawer(enable = true) {
+    activeLeftDrawer (enable = true) {
       this.enableLeftDrawer = enable;
       this.leftDrawer = enable;
     },
-    activeRightDrawer(enable = true) {
+    activeRightDrawer (enable = true) {
       this.enableRightDrawer = enable;
       this.rightDrawer = enable;
     },
-    toggleLeftDrawer() {
+    toggleLeftDrawer () {
       if (this.isLeftDrawerEnabled) {
         this.leftDrawer = !this.leftDrawer;
       }
     },
-    toggleRighDrawer() {
+    toggleRighDrawer () {
       if (this.isRightDrawerEnabled) {
         this.rightDrawer = !this.rightDrawer;
       }
     },
-    leftDrawerComputed() {
+    leftDrawerComputed () {
       return computed(() => this.leftDrawer);
     },
-    onAppUpdate(callback: () => void) {
+    onAppUpdate (callback: () => void) {
       if (!watchingForUpdate) {
         watchingForUpdate = true;
         const channel = new BroadcastChannel('world-cup-tipping');

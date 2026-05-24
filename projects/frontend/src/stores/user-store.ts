@@ -5,7 +5,7 @@ import type { User } from 'src/api/User';
 const tokenKey = '_t';
 const vapidKey = 'vapid';
 const token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsInN1YiI6IjAxOWUxZjRhLTNkMDktN2VhMi1iZjk0LTNiZGMyNGQxMDIxYyIsImV4cCI6MTc4MTI2NDgyNiwiaWF0IjoxNzc4NjcyODI2LCJuYmYiOjE3Nzg2NzI4MjYsImp0aSI6IjJmYTc3ZGE4NGUyMjQzNzY5MDNmMjg3NWVmNzM4NGUyYzdlMjc3NmI0MGRlOTBkOWM5ZWE3YTUwOGJmM2M1NzAiLCJpc3MiOm51bGwsInByaXZhdGUiOnsiX2FyIjoiMDE5ZTFmNGEtMzhiYS03ZGEzLWI0ZTUtYmQxMWIzOTAzOTFkIn19.y84KtPptmRQRkp0Rl1X44eLmrKOLdHYHcYWrnYqCai0';
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsInN1YiI6IjAxOWU0ZmE4LTNiZjAtNzk5Mi05YzdhLWUyOWY1OTA2NmZjMSIsImV4cCI6MTc4MjA0NDkwMSwiaWF0IjoxNzc5NDUyOTAxLCJuYmYiOjE3Nzk0NTI5MDEsImp0aSI6ImRiZmJlNDFkMTE1NGYyNGY2NDA2MzI1YjU3NmQ1ZDI4Zjg4YmQ3YjI3NmY2Yzk3Nzk2YzgxMThlNjg1NDJmMTkiLCJpc3MiOm51bGwsInByaXZhdGUiOnsiX2FyIjoiMDE5ZTRmYTgtMzc4ZC03OTkyLWFhYjAtMWNiNDU1YmZkODA1In19.YTUDnCZK5C6h3RkZIHl356Rjz-BX-t0Ht832jTfI2Uw';
 
 export const useUserStore = defineStore('userStore', {
   state: () => ({
@@ -20,10 +20,10 @@ export const useUserStore = defineStore('userStore', {
     token: (state) => state.activeToken,
   },
   actions: {
-    login(username: string, password: string) {
+    login (username: string, password: string) {
       console.log('do login', { username, password });
     },
-    authHeader() {
+    authHeader () {
       return new Headers([
         ['Authorization', `Bearer ${token}`],
         ['Accept', 'application/json'],

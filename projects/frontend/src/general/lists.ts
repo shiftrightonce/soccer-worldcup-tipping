@@ -1,3 +1,5 @@
+import type { GameStatus } from 'src/api/GameStatus';
+import type { Stage } from 'src/api/Stage';
 import type { StrategyType } from 'src/api/StrategyType';
 import type { TournamentStatus } from 'src/api/TournamentStatus';
 
@@ -42,3 +44,31 @@ export const tournamentStatusKeyValue: Record<TournamentStatus, string> = {
 };
 
 export const tournamentStatusList: TournamentStatus[] = ['active', 'completed', 'pending'];
+
+export const gameStatusList: GameStatus[] = ['pending', 'open', 'closed', 'scored', 'completed'] as const;
+export const gameStatusKeyValue: Record<typeof gameStatusList[number], string> = {
+  pending: 'Pending',
+  open: 'Open',
+  closed: 'Closed',
+  scored: 'Scored',
+  completed: 'Completed',
+};
+
+export const stageList: Stage[] = [
+  'group',
+  'round_32',
+  'round_16',
+  'round_8',
+  'round_4',
+  'third_place',
+  'final',
+] as const;
+export const stageKeyValue: Record<typeof stageList[number], string> = {
+  group: 'Group Stage',
+  round_32: 'Round of 32',
+  round_16: 'Round of 16',
+  round_8: 'Round of 8',
+  round_4: 'Round of 4',
+  third_place: 'Third Place Match',
+  final: 'Final',
+};

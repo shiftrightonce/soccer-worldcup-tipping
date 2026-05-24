@@ -3,7 +3,7 @@
     <template v-slot:prepend>
       <q-icon name="event" class="cursor-pointer">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-          <q-date v-model="date" mask="YYYY-MM-DD HH:mm">
+          <q-date v-model="date" mask="YYYY-MM-DD HH:mm:ssZ">
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat />
             </div>
@@ -15,7 +15,7 @@
     <template v-slot:append>
       <q-icon name="access_time" class="cursor-pointer">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-          <q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h>
+          <q-time v-model="date" mask="YYYY-MM-DD HH:mm:ssZ" format24h>
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat />
             </div>
@@ -27,7 +27,5 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-
-const date = ref()
+const date = defineModel<string | null>({ required: true })
 </script>

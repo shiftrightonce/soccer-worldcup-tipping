@@ -2,13 +2,14 @@
 import type { StrategyType } from "../StrategyType";
 
 export type TipStrategyPayload = {
-  tournament_id: string;
+  tournamentId: string;
   label: string;
   description: string;
-  game_id: string;
-  opens_at: string;
-  ends_at: string;
-  calculate_points_on: string;
+  gameId: string | null;
+  groupId: string | null;
+  opensAt: string;
+  endsAt: string;
+  calculatePointsOn: string;
   completed: boolean;
-  strategy_types: Array<StrategyType>;
+  strategyTypes: Array<StrategyType>;
 };

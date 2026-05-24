@@ -78,6 +78,30 @@ const routes: RouteRecordRaw[] = [
             name: 'manage-group'
           },
           {
+            path: 'country-groups',
+            component: () => import('pages/admin/manage/CountryGroupDashboardPage.vue'),
+            props: true,
+            name: 'country-groups-dashboard'
+          },
+          {
+            path: 'country-groups/manage/:id?',
+            component: () => import('pages/admin/manage/ManageCountryGroupPage.vue'),
+            props: true,
+            name: 'manage-country-group'
+          },
+          {
+            path: 'games',
+            component: () => import('pages/admin/manage/GameDashboardPage.vue'),
+            props: true,
+            name: 'games-dashboard'
+          },
+          {
+            path: 'games/manage/:id?',
+            component: () => import('pages/admin/manage/ManageGamePage.vue'),
+            props: true,
+            name: 'manage-game'
+          },
+          {
             path: 'strategies',
             component: () => import('pages/admin/manage/StrategyDashboardPage.vue'),
             props: true,

@@ -9,7 +9,7 @@ export type ChatRoomUser = {
   chatRoomId: string;
   userId: string;
   isAdmin: boolean;
-  createdAt: string | null;
-  updatedAt: string | null;
-  deletedAt: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 };

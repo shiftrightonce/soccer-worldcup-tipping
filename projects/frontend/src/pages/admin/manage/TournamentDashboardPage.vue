@@ -6,14 +6,8 @@
         <div class="text-body2 text-muted-foreground">Manage Tournaments</div>
       </div>
       <div class="col-2">
-        <q-btn
-          color="primary"
-          icon="add"
-          outline
-          no-caps
-          label="New Tournament"
-          :to="{ name: 'admin-manage-new-tournament' }"
-        ></q-btn>
+        <q-btn color="primary" icon="add" outline no-caps label="New Tournament"
+          :to="{ name: 'admin-manage-new-tournament' }"></q-btn>
       </div>
     </div>
     <div class="row">
@@ -34,16 +28,18 @@
                   <q-menu>
                     <q-list>
                       <q-item clickable v-close-popup>
-                        <q-item-section @click="() => onEditClick(props.key)" >Edit</q-item-section>
+                        <q-item-section @click="() => onEditClick(props.key)">Edit</q-item-section>
                       </q-item>
                       <q-item clickable v-close-popup>
-                        <q-item-section @click="() => onManageGroupClick(props.key)" >Manage Groups</q-item-section>
+                        <q-item-section @click="() => onManageCountryGroupClick(props.key)">Manage Country
+                          Groups</q-item-section>
                       </q-item>
                       <q-item clickable v-close-popup>
-                        <q-item-section @click="() => onManageStrategiesClick(props.key)">Manage Strategies</q-item-section>
+                        <q-item-section @click="() => onManageStrategiesClick(props.key)">Manage
+                          Strategies</q-item-section>
                       </q-item>
                       <q-item clickable v-close-popup>
-                        <q-item-section >Manage Games</q-item-section>
+                        <q-item-section @click="() => onManageGamesClick(props.key)">Manage Games</q-item-section>
                       </q-item>
                     </q-list>
                   </q-menu>
@@ -123,9 +119,9 @@ const onEditClick = async (id: string) => {
   })
 }
 
-const onManageGroupClick = async (id: string) => {
+const onManageCountryGroupClick = async (id: string) => {
   await router.push({
-    name: 'groups-dashboard',
+    name: 'country-groups-dashboard',
     params: {
       tournamentId: id
     }
@@ -140,10 +136,18 @@ const onManageStrategiesClick = async (id: string) => {
     }
   })
 }
+const onManageGamesClick = async (id: string) => {
+  await router.push({
+    name: 'games-dashboard',
+    params: {
+      tournamentId: id
+    }
+  })
+}
 
 onMounted(async () => {
   try {
-    const params = new URLSearchParams({_sort: "-id"})
+    const params = new URLSearchParams({ _sort: "-id" })
     const response = await client.paginate(params);
     if (response.data) {
       result.value = response.data;

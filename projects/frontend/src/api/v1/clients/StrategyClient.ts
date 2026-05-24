@@ -7,7 +7,7 @@ export type TipStrategyResult = ApiResponse<TipStrategy>;
 
 export class TipStrategyClient extends BaseClient {
 
-  constructor(authHeader: Headers, private tournamentId: string) {
+  constructor(authHeader: Headers, tournamentId: string) {
     const baseUrl = `/api/v1/strategies/${tournamentId}`
     super(authHeader, baseUrl)
   }
@@ -19,20 +19,39 @@ export class TipStrategyClient extends BaseClient {
   public async byId (id: string): Promise<TipStrategyResult> {
     return await this.getOne(id)
   }
+
+  public async save (payload: TipStrategyPayload, id?: string,): Promise<TipStrategyResult> {
+    const data = JSON.stringify(payload)
+    if (id) {
+      return await this.put(id, data)
+    } else {
+      return await this.post('', data)
+    }
+  }
 }
 
 
 export const makeNewPayload = (): TipStrategyPayload => ({
-  tournament_id: '',
+  tournamentId: '',
   label: '',
   description: '',
-  game_id: '',
-  opens_at: '',
-  ends_at: '',
-  calculate_points_on: '',
+  gameId: null,
+  groupId: null,
+  opensAt: '',
+  endsAt: '',
+  calculatePointsOn: '',
   completed: false,
-  strategy_types: []
+  strategyTypes: []
 })
+
+export const TipStrategyToPayload = (data: TipStrategy): TipStrategyPayload => {
+  const payload = makeNewPayload()
+  payload.calculatePointsOn = (new Date(data.calculatePointsOn as string)).toLocaleString()
+  payload.endsAt = (new Date(data.endsAt as string)).toLocaleString();
+  payload.description = data.description
+
+  return payload;
+}
 
 export default (authHeader: Headers, tournamentId: string,): TipStrategyClient => {
   return new TipStrategyClient(authHeader, tournamentId)
