@@ -21,6 +21,13 @@ pub async fn list_handler(
     ApiResponse::from(repo.paginate_by_tournament(tournament_id, Some(page)).await)
 }
 
+pub async fn get_handler(
+    CtxExt(mut repo): CtxExt<CountryGroupRepo>,
+    Path((tournament_id, id)): Path<(ArcUuid7, ArcUuid7)>,
+) -> impl IntoResponse {
+    ApiResponse::<CountryGroup>::from(repo.by_tournament_and_id(tournament_id, id).await)
+}
+
 pub async fn all_handler(
     CtxExt(mut repo): CtxExt<CountryGroupRepo>,
     Path(tournament_id): Path<ArcUuid7>,
@@ -54,6 +61,7 @@ pub async fn update_handler(
 #[derive(Debug, Default, Clone, Deserialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
+#[ts(export_to = "v1/")]
 pub struct CountryGroupPayload {
     #[ts(type = "string | null")]
     tournament_id: ArcUuid7,

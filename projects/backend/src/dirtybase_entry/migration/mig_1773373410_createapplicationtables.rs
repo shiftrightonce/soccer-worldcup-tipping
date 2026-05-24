@@ -44,8 +44,8 @@ impl Migration for Mig1773373410CreateApplicationTables {
             .create_table_schema(Country::table_name(), |bp| {
                 bp.uuid_as_id(None);
                 bp.string(Country::col_name_for_name());
-                bp.sized_string(Country::col_name_for_alpha2(), 2);
-                bp.sized_string(Country::col_name_for_alpha3(), 3);
+                bp.sized_string(Country::col_name_for_alpha2(), 10);
+                bp.sized_string(Country::col_name_for_alpha3(), 10);
                 bp.timestamps();
                 bp.soft_deletable();
             })
@@ -91,9 +91,8 @@ impl Migration for Mig1773373410CreateApplicationTables {
                     .set_is_nullable(true);
                 bp.text(TipStrategy::col_name_for_description())
                     .set_is_nullable(true);
-                bp.uuid_table_fk::<Game>(true)
-                    .set_is_nullable(true)
-                    .set_is_unique(true);
+                bp.uuid_table_fk::<Game>(true).set_is_nullable(true);
+                bp.uuid_table_fk::<Group>(true).set_is_nullable(true);
                 bp.uuid_table_fk::<Tournament>(true);
                 bp.timestamp(TipStrategy::col_name_for_opens_at());
                 bp.timestamp(TipStrategy::col_name_for_ends_at());
@@ -103,6 +102,15 @@ impl Migration for Mig1773373410CreateApplicationTables {
                     .default_is_empty_array();
                 bp.timestamps();
                 bp.soft_deletable();
+
+                bp.unique_index(&[
+                    TipStrategy::col_name_for_tournament_id(),
+                    TipStrategy::col_name_for_game_id(),
+                ]);
+                bp.unique_index(&[
+                    TipStrategy::col_name_for_tournament_id(),
+                    TipStrategy::col_name_for_group_id(),
+                ]);
             })
             .await?;
 
@@ -158,6 +166,10 @@ impl Migration for Mig1773373410CreateApplicationTables {
                     true,
                     Some(Country::id_column()),
                 );
+                bp.datetime(Game::col_name_for_to_configure_on())
+                    .set_is_nullable(true);
+                bp.string(Game::col_name_for_status());
+                bp.string(Game::col_name_for_stage());
                 bp.boolean(Game::col_name_for_penalty()).default_is_false();
                 bp.integer(Game::col_name_for_country_a_goals())
                     .default_is_zero();

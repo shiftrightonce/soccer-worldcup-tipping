@@ -164,9 +164,9 @@ pub struct Game {
     pub(crate) tournament: Option<Tournament>,
     #[ts(type = "string")]
     pub(crate) tournament_id: ArcUuid7,
-    #[dirty(rel(kind = "belongs_to", column = "country_a_id"))]
+    #[dirty(rel(kind = "belongs_to", local_col = "country_a_id"))]
     pub(crate) country_a: Option<Country>,
-    #[dirty(rel(kind = "belongs_to", column = "country_b_id"))]
+    #[dirty(rel(kind = "belongs_to", local_col = "country_b_id"))]
     pub(crate) country_b: Option<Country>,
     #[ts(type = "string")]
     pub(crate) country_a_id: ArcUuid7,
@@ -181,7 +181,7 @@ pub struct Game {
     pub(crate) country_a_penalty_goals: IntegerField,
     #[ts(type = "number")]
     pub(crate) country_b_penalty_goals: IntegerField,
-    #[dirty(rel(kind = "belongs_to", column = "winner_id"))]
+    #[dirty(rel(kind = "belongs_to", local_col = "winner_id"))]
     pub(crate) winner: Option<Country>,
     #[ts(type = "string")]
     pub(crate) winner_id: Option<ArcUuid7>,
@@ -352,6 +352,7 @@ impl GameRepo {
         tournament_id: ArcUuid7,
         id: ArcUuid7,
     ) -> Result<Option<Game>, anyhow::Error> {
+        self.with_country_a().with_country_b();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.by_id(id).await
     }
@@ -360,6 +361,8 @@ impl GameRepo {
         &mut self,
         tournament_id: ArcUuid7,
     ) -> Result<Vec<Game>, anyhow::Error> {
+        self.with_country_a().with_country_b();
+        self.builder.desc(Self::col_count());
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.get().await
     }
@@ -369,16 +372,25 @@ impl GameRepo {
         tournament_id: ArcUuid7,
         status: GameStatus,
     ) -> Result<Vec<Game>, anyhow::Error> {
+        self.with_country_a().with_country_b();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.builder.is_eq(Self::col_status(), status);
+        self.builder.desc(Self::col_count());
         self.get().await
     }
 
     pub async fn paginate_by_tournament(
         &mut self,
         tournament_id: ArcUuid7,
-        page: Option<PaginateBuilder>,
+        mut page: Option<PaginateBuilder>,
     ) -> PaginateResult<Game> {
+        self.with_country_a().with_country_b();
+        if let Some(p) = &mut page {
+            p.add_order(
+                Self::col_count(),
+                dirtybase_app::db::base::order_by_builder::Direction::DESC,
+            );
+        }
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.paginate(page).await
     }

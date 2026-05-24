@@ -11,7 +11,7 @@ use dirtybase_app::{
 use dirtybase_common::anyhow;
 use serde::{Deserialize, Serialize};
 
-use crate::dirtybase_entry::model::{game::Game, tournament::Tournament};
+use crate::dirtybase_entry::model::{game::Game, group::Group, tournament::Tournament};
 
 #[derive(Debug, Default, Clone, Serialize, DirtyTable, ts_rs::TS)]
 #[ts(export)]
@@ -22,6 +22,8 @@ pub struct TipStrategy {
     pub(crate) game: Option<Game>,
     #[dirty(rel(kind = "belongs_to"))]
     pub(crate) tournament: Option<Tournament>,
+    #[dirty(rel(kind = "belongs_to"))]
+    pub(crate) group: Option<Group>,
 
     #[ts(type = "string")]
     pub(crate) id: Option<ArcUuid7>,
@@ -29,28 +31,30 @@ pub struct TipStrategy {
     pub(crate) tournament_id: ArcUuid7,
     #[ts(type = "string | null")]
     pub(crate) game_id: Option<ArcUuid7>,
+    #[ts(type = "string | null")]
+    pub(crate) group_id: Option<ArcUuid7>,
     #[ts(type = "string")]
     pub(crate) label: LabelField,
     pub(crate) description: ArcStrField,
     // Date and time when this strategy opens for tips.
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) opens_at: DateTimeField,
     // Date and time when this strategy ends for tips.
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) ends_at: DateTimeField,
     // Date and time when this strategy calculates points.
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) calculate_points_on: Option<DateTimeField>,
     // Indicates whether this strategy has been completed and all points have been calculated.
     #[ts(type = "boolean")]
     pub(crate) completed: BooleanField,
     // Types of strategies to apply.
     pub(crate) strategy_types: HashSet<StrategyType>,
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) created_at: Option<DateTimeField>,
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) updated_at: Option<DateTimeField>,
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) deleted_at: Option<DateTimeField>,
 }
 
@@ -60,6 +64,7 @@ impl TipStrategyRepo {
         tournament_id: ArcUuid7,
         id: ArcUuid7,
     ) -> Result<Option<TipStrategy>, anyhow::Error> {
+        self.with_tournament().with_game().with_group();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.by_id(id).await
     }
@@ -68,6 +73,7 @@ impl TipStrategyRepo {
         &mut self,
         tournament_id: ArcUuid7,
     ) -> Result<Vec<TipStrategy>, anyhow::Error> {
+        self.with_tournament().with_game().with_group();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.get().await
     }
@@ -77,6 +83,7 @@ impl TipStrategyRepo {
         tournament_id: ArcUuid7,
         page: Option<PaginateBuilder>,
     ) -> PaginateResult<TipStrategy> {
+        self.with_tournament().with_game().with_group();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.paginate(page).await
     }
@@ -86,6 +93,7 @@ impl TipStrategyRepo {
         tournament_id: ArcUuid7,
         record: TipStrategy,
     ) -> Result<TipStrategy, anyhow::Error> {
+        self.with_tournament().with_game().with_group();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.update(record).await
     }

@@ -91,7 +91,7 @@ pub(crate) struct GamePayload {
     pub(crate) country_b_goals: Option<IntegerField>,
     #[ts(type = "string | null")]
     pub(crate) winner_id: Option<ArcUuid7>,
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) to_configure_on: Option<DateTimeField>,
     #[ts(type = "number | null")]
     pub(crate) country_a_penalty_goals: Option<IntegerField>,

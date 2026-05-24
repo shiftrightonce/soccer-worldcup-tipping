@@ -51,6 +51,7 @@ pub fn register_routes(manager: &mut RouterManager) {
                     country_group_controller::create_handler,
                     ["can:country-group:create"],
                 )
+                .get_x("/{id}", country_group_controller::get_handler)
                 .put_x_with_middleware(
                     "/{id}",
                     country_group_controller::update_handler,

@@ -97,6 +97,7 @@ pub async fn delete_handler(
 #[derive(Debug, Clone, Deserialize, ts_rs::TS)]
 #[ts(export)]
 #[ts(export_to = "v1/")]
+#[serde(rename_all = "camelCase")]
 pub(crate) struct TipStrategyPayload {
     #[ts(type = "string")]
     tournament_id: Option<ArcUuid7>,
@@ -105,6 +106,8 @@ pub(crate) struct TipStrategyPayload {
     description: ArcStrField,
     #[ts(type = "string | null")]
     game_id: Option<ArcUuid7>,
+    #[ts(type = "string | null")]
+    group_id: Option<ArcUuid7>,
     #[ts(type = "string")]
     opens_at: DateTimeField,
     #[ts(type = "string")]
@@ -126,6 +129,8 @@ impl From<TipStrategyPayload> for TipStrategy {
             label: value.label,
             description: value.description,
             game_id: value.game_id,
+            group_id: value.group_id,
+            group: None,
             game: None,
             opens_at: value.opens_at,
             ends_at: value.ends_at,

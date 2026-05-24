@@ -58,6 +58,7 @@ pub struct CountryGroup {
     #[ts(type = "string")]
     pub(crate) country_id: ArcUuid7,
     pub(crate) is_out: bool,
+    #[ts(type = "number")]
     pub(crate) points: IntegerField,
     #[ts(type = "Date | null")]
     pub(crate) created_at: CreatedAtField,
@@ -85,5 +86,15 @@ impl CountryGroupRepo {
         self.with_country().with_group().with_tournament();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.get().await
+    }
+
+    pub async fn by_tournament_and_id(
+        &mut self,
+        tournament_id: ArcUuid7,
+        id: ArcUuid7,
+    ) -> Result<Option<CountryGroup>, anyhow::Error> {
+        self.with_country().with_group().with_tournament();
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.by_id(id).await
     }
 }
