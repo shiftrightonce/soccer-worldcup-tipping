@@ -32,8 +32,7 @@
     <q-form ref="form">
       <div class="row">
         <div class="col-6 q-pa-sm">
-          <q-select outlined v-model="model.data.countryId" :options="countries" map-options emit-value
-            option-value="id" option-label="name" label="Country" />
+          <CountryDropdown :countries="countries" label="Country" v-model="model.data.countryId" />
         </div>
 
         <div class="col-6 q-pa-sm">
@@ -64,6 +63,7 @@ import GroupClient from 'src/api/v1/clients/GroupClient';
 import { useUserStore } from 'src/stores/user-store';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import CountryDropdown from 'src/components/CountryDropdown.vue';
 
 const form = ref(null)
 const userStore = useUserStore()

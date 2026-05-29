@@ -116,6 +116,10 @@ export default defineConfig((ctx) => {
           position: 'top-right',
           color: 'positive',
         },
+        loadingBar: {
+          color: 'primary',
+          size: '5px',
+        },
       },
 
       // iconSet: 'material-icons', // Quasar icon set

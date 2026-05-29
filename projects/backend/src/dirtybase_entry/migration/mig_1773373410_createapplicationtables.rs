@@ -11,6 +11,8 @@ use crate::dirtybase_entry::model::chat_room_user::ChatRoomUser;
 use crate::dirtybase_entry::model::country::Country;
 use crate::dirtybase_entry::model::game::Game;
 use crate::dirtybase_entry::model::group::{CountryGroup, Group};
+use crate::dirtybase_entry::model::queue_job::QueueJob;
+use crate::dirtybase_entry::model::strategy_result::StrategyResult;
 use crate::dirtybase_entry::model::tip::Tip;
 use crate::dirtybase_entry::model::tip_strategy::TipStrategy;
 use crate::dirtybase_entry::model::tournament::Tournament;
@@ -114,6 +116,18 @@ impl Migration for Mig1773373410CreateApplicationTables {
             })
             .await?;
 
+        manager
+            .create_table_schema(StrategyResult::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.uuid_table_fk::<TipStrategy>(true);
+                bp.json(StrategyResult::col_name_for_strategy_results())
+                    .default_is_empty_array();
+                bp.timestamps();
+                bp.soft_deletable();
+                bp.unique_index(&[StrategyResult::col_name_for_tip_strategy_id()]);
+            })
+            .await?;
+
         // Tip
         manager
             .create_table_schema(Tip::table_name(), |bp| {
@@ -123,6 +137,8 @@ impl Migration for Mig1773373410CreateApplicationTables {
                 bp.uuid_table_fk::<TipStrategy>(true);
                 bp.json(Tip::col_name_for_strategies())
                     .default_is_empty_object();
+                bp.json(Tip::col_name_for_tip_strategy_pts())
+                    .default_is_empty_array();
                 bp.integer(Tip::col_name_for_points()).default_is_zero();
                 bp.timestamps();
                 bp.soft_deletable();
@@ -258,12 +274,25 @@ impl Migration for Mig1773373410CreateApplicationTables {
             })
             .await?;
 
+        // queue jobs
+        manager
+            .create_table_schema(QueueJob::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.string(QueueJob::col_name_for_job_type());
+                bp.json(QueueJob::col_name_for_payload()).nullable();
+                bp.string(QueueJob::col_name_for_status());
+                bp.json(QueueJob::col_name_for_log()).nullable();
+                bp.timestamps();
+            })
+            .await?;
+
         Ok(())
     }
 
     async fn down(&self, manager: &Manager, _: &Context) -> Result<(), anyhow::Error> {
         manager.drop_table(Tip::table_name()).await?;
         manager.drop_table(TipStrategy::table_name()).await?;
+        manager.drop_table(StrategyResult::table_name()).await?;
         manager.drop_table(Game::table_name()).await?;
         manager.drop_table(ChatMessage::table_name()).await?;
         manager.drop_table(ChatRoomUser::table_name()).await?;
@@ -273,6 +302,7 @@ impl Migration for Mig1773373410CreateApplicationTables {
         manager.drop_table(Group::table_name()).await?;
         manager.drop_table(Country::table_name()).await?;
         manager.drop_table(Tournament::table_name()).await?;
+        manager.drop_table(QueueJob::table_name()).await?;
         Ok(())
     }
 }

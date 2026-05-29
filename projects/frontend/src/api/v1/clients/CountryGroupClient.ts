@@ -24,6 +24,10 @@ export class CountryGroupClient extends BaseClient {
     return await this.getOne(id, params)
   }
 
+  public async byGroupId (groupId: string, params?: URLSearchParams): Promise<ApiResponse<CountryGroup[]>> {
+    return await this.getMany(`by-group/${groupId}`, params)
+  }
+
 
   public async save (payload: CountryGroupPayload, id = ''): Promise<ApiResponse<CountryGroup>> {
     const body = JSON.stringify(payload)

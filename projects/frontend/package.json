@@ -21,6 +21,7 @@
     "flag-icons": "^7.5.0",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
+    "register-service-worker": "^1.7.2",
     "sortablejs": "^1",
     "vue": "^3.5.22",
     "vue-i18n": "^11.3.0",
@@ -41,7 +42,14 @@
     "typescript": "^5.9.3",
     "vite-plugin-checker": "^0.12.0",
     "vue-eslint-parser": "^10.4.0",
-    "vue-tsc": "^3.2.6"
+    "vue-tsc": "^3.2.6",
+    "workbox-build": "^7.0.0",
+    "workbox-cacheable-response": "^7.0.0",
+    "workbox-core": "^7.0.0",
+    "workbox-expiration": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0"
   },
   "engines": {
     "node": "^28 || ^26 || ^24 || ^22.12",

@@ -44,50 +44,50 @@ export const strategyFromType = (strategyType: StrategyType): Strategy => {
   }
 };
 
-export const validateStrategy = (strategy: Strategy): boolean => {
+export const validateStrategy = (strategy: Strategy): true | string => {
   switch (strategy.kind) {
     case 'winner':
       if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
-        return false;
+        return 'Winner entry is required';
       }
       return true;
     case 'cup_winner':
       if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
-        return false;
+        return 'Cup winner entry is required';
       }
       return true;
     case 'first_red_card':
       if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
-        return false;
+        return 'First red card entry is required';
       }
       return true;
     case 'first_yellow_card':
       if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
-        return false;
+        return 'First yellow card entry is required';
       }
       return true;
     case 'game_to_penalty':
       if (typeof strategy.entry !== 'boolean') {
-        return false;
+        return 'Game to penalty entry is required';
       }
       return true;
     case 'goals': {
       if (typeof strategy.entry !== 'object') {
-        return false;
+        return 'Goals entry is required';
       }
       const { country_a_goals, country_b_goals } = strategy.entry;
-      if (typeof country_a_goals !== 'number' || typeof country_b_goals !== 'number') {
-        return false;
+      if (typeof country_a_goals !== 'number' || typeof country_b_goals !== 'number' || country_a_goals < 0 || country_b_goals < 0) {
+        return 'Invalid goals entry';
       }
       return true;
     }
     case 'penalty_goals': {
       if (typeof strategy.entry !== 'object') {
-        return false;
+        return 'Penalty goals entry is required';
       }
       const { country_a_goals, country_b_goals } = strategy.entry;
-      if (typeof country_a_goals !== 'number' || typeof country_b_goals !== 'number') {
-        return false;
+      if (typeof country_a_goals !== 'number' || typeof country_b_goals !== 'number' || country_a_goals < 0 || country_b_goals < 0) {
+        return 'Invalid penalty goals entry';
       }
       return true;
     }
@@ -97,7 +97,7 @@ export const validateStrategy = (strategy: Strategy): boolean => {
         strategy.entry.some((p) => typeof p !== 'string' || p.trim() === '') ||
         strategy.entry.length !== 4
       ) {
-        return false;
+        return 'Group ranking entry must be 4 countries';
       }
       return true;
     case 'round_32_qualifiers':
@@ -106,7 +106,7 @@ export const validateStrategy = (strategy: Strategy): boolean => {
         strategy.entry.some((p) => typeof p !== 'string' || p.trim() === '') ||
         strategy.entry.length !== 32
       ) {
-        return false;
+        return 'Round of 32 qualifiers entry must be 32 countries';
       }
       return true;
     case 'round_16_qualifiers':
@@ -115,7 +115,7 @@ export const validateStrategy = (strategy: Strategy): boolean => {
         strategy.entry.some((p) => typeof p !== 'string' || p.trim() === '') ||
         strategy.entry.length !== 16
       ) {
-        return false;
+        return 'Round of 16 qualifiers entry must be 16 countries';
       }
       return true;
     case 'round_8_qualifiers':
@@ -124,7 +124,7 @@ export const validateStrategy = (strategy: Strategy): boolean => {
         strategy.entry.some((p) => typeof p !== 'string' || p.trim() === '') ||
         strategy.entry.length !== 8
       ) {
-        return false;
+        return 'Round of 8 qualifiers entry must be 8 countries';
       }
       return true;
     case 'round_4_qualifiers':
@@ -133,7 +133,7 @@ export const validateStrategy = (strategy: Strategy): boolean => {
         strategy.entry.some((p) => typeof p !== 'string' || p.trim() === '') ||
         strategy.entry.length !== 4
       ) {
-        return false;
+        return 'Round of 4 qualifiers entry must be 4 countries';
       }
       return true;
     case 'third_place_qualifiers':
@@ -142,7 +142,7 @@ export const validateStrategy = (strategy: Strategy): boolean => {
         strategy.entry.some((p) => typeof p !== 'string' || p.trim() === '') ||
         strategy.entry.length !== 2
       ) {
-        return false;
+        return 'Third place qualifiers entry must be 2 countries';
       }
       return true;
     case 'final':
@@ -151,7 +151,7 @@ export const validateStrategy = (strategy: Strategy): boolean => {
         strategy.entry.some((p) => typeof p !== 'string' || p.trim() === '') ||
         strategy.entry.length !== 2
       ) {
-        return false;
+        return 'Final entry must be 2 countries';
       }
       return true;
   }

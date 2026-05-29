@@ -73,14 +73,14 @@ export const useMenuStore = defineStore('menu', {
     main: [
       scoreboardMenuItem,
       {
-        label: 'Active Matches',
-        to: { name: 'active-matches' },
+        label: 'Active Tips',
+        to: { name: 'active-tips' },
         icon: 'circle_notifications',
         color: 'primary',
       },
       {
-        label: 'Past Matches',
-        to: { name: 'past-matches' },
+        label: 'Past Tips',
+        to: { name: 'past-tips' },
         icon: 'notifications_paused',
         color: 'primary',
       },
@@ -198,7 +198,7 @@ export const useMenuStore = defineStore('menu', {
     managementMenuItems: (state) => state.management,
   },
   actions: {
-    async shareApp() {
+    async shareApp () {
       if (isSupported.value) {
         await share({
           title: 'Invitation',
@@ -207,7 +207,7 @@ export const useMenuStore = defineStore('menu', {
         });
       }
     },
-    shareIsSupported() {
+    shareIsSupported () {
       return isSupported.value;
     },
   },

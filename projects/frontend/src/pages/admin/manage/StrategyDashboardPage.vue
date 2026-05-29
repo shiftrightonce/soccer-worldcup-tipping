@@ -53,7 +53,7 @@ import type { Group } from 'src/api/Group';
 import type { StrategyType } from 'src/api/StrategyType';
 import type { TipStrategy } from 'src/api/TipStrategy';
 import type { Tournament } from 'src/api/Tournament';
-import TipStrategyClient from 'src/api/v1/clients/StrategyClient'
+import TipStrategyClient from 'src/api/v1/clients/TipStrategyClient'
 import { strategyTypeKeyValue } from 'src/general/lists';
 import { useUserStore } from 'src/stores/user-store';
 import { onMounted, ref } from 'vue';
@@ -91,6 +91,13 @@ const columns = [
     field: 'tournament',
     align: 'left',
     format: (val: Tournament, _row: TipStrategy) => val.label
+  },
+  {
+    name: 'endsAt',
+    label: 'Ends At',
+    field: 'endsAt',
+    align: 'left',
+    format: (val: string | null, _row: TipStrategy) => (val ? new Date(val).toLocaleString() : ''),
   },
   {
     name: 'game',

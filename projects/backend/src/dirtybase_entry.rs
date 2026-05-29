@@ -13,6 +13,8 @@ use dirtybase_contract::prelude::*;
 use crate::dirtybase_entry::model::country::CountryRepo;
 use crate::dirtybase_entry::model::game::GameRepo;
 use crate::dirtybase_entry::model::group::{CountryGroupRepo, GroupRepo};
+use crate::dirtybase_entry::model::strategy_result::StrategyResultRepo;
+use crate::dirtybase_entry::model::tip::TipRepo;
 use crate::dirtybase_entry::model::tip_strategy::TipStrategyRepo;
 use crate::dirtybase_entry::model::tournament::TournamentRepo;
 use crate::dirtybase_entry::model::user::UserRepo;
@@ -35,6 +37,11 @@ impl dirtybase_contract::ExtensionSetup for Extension {
         ContextResourceManager::scoped("tip_strategy_repo", |ctx| async move {
             let manager = ctx.get::<Manager>().await?;
             Ok(TipStrategyRepo::new(&manager))
+        })
+        .await;
+        ContextResourceManager::scoped("tip_repo", |ctx| async move {
+            let manager = ctx.get::<Manager>().await?;
+            Ok(TipRepo::new(&manager))
         })
         .await;
         ContextResourceManager::scoped("user_repo", |ctx| async move {
@@ -62,6 +69,30 @@ impl dirtybase_contract::ExtensionSetup for Extension {
             Ok(CountryGroupRepo::new(&manager))
         })
         .await;
+        ContextResourceManager::scoped("tip_result_repo", |ctx| async move {
+            let manager = ctx.get::<Manager>().await?;
+            Ok(StrategyResultRepo::new(&manager))
+        })
+        .await;
+
+        // FIXME: cron and queue crate are messed up. Fix both before going further
+
+        // dirtybase_cron::CronJobRegisterer::register("calculate_points", |job| {
+        //     Box::pin(async move {
+        //         tracing::info!(
+        //             "checking tip results that need to be calculated: {}",
+        //             job.id()
+        //         );
+        //     })
+        // })
+        // .await;
+
+        // // FIXME: This should be remove as the cron crate suppose to handle this based on the env vars, but for some reason it is not working, need to investigate
+        // let config = JobConfig::new("calculate_points", "every 6 seconds", true, None, None);
+        // let r = CronJobRegisterer::new(Context::make_global().await, config);
+        // if let Ok(j) = r.get_handler().await {
+        //     _ = j.schedule().await;
+        // }
     }
 
     async fn migrations(

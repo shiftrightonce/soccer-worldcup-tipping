@@ -7,7 +7,7 @@ use dirtybase_app::{
 };
 use dirtybase_contract::{
     http_contract::api::ApiResponse,
-    prelude::{CtxExt, IntoResponse, Path, StatusCode},
+    prelude::{CtxExt, IntoResponse, Path, Query, StatusCode},
 };
 use serde::Deserialize;
 
@@ -16,9 +16,18 @@ use crate::dirtybase_entry::model::group::{CountryGroup, CountryGroupRepo};
 pub async fn list_handler(
     CtxExt(mut repo): CtxExt<CountryGroupRepo>,
     Path(tournament_id): Path<ArcUuid7>,
+    Query(parameters): Query<Parameters>,
     page: PaginateBuilder,
 ) -> impl IntoResponse {
+    parameters.apply(&mut repo);
     ApiResponse::from(repo.paginate_by_tournament(tournament_id, Some(page)).await)
+}
+
+pub async fn by_group_handler(
+    CtxExt(mut repo): CtxExt<CountryGroupRepo>,
+    Path((tournament_id, group_id)): Path<(ArcUuid7, ArcUuid7)>,
+) -> impl IntoResponse {
+    ApiResponse::from(repo.by_tournament_and_group(tournament_id, group_id).await)
 }
 
 pub async fn get_handler(
@@ -31,7 +40,9 @@ pub async fn get_handler(
 pub async fn all_handler(
     CtxExt(mut repo): CtxExt<CountryGroupRepo>,
     Path(tournament_id): Path<ArcUuid7>,
+    Query(params): Query<Parameters>,
 ) -> impl IntoResponse {
+    params.apply(&mut repo);
     ApiResponse::from(repo.all_by_tournament(tournament_id).await)
 }
 
@@ -105,5 +116,33 @@ impl From<CountryGroupPayload> for CountryGroup {
         };
 
         value.merge(g)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct Parameters {
+    with: Option<String>,
+    filter: Option<String>,
+}
+
+impl Parameters {
+    pub fn apply(&self, repo: &mut CountryGroupRepo) {
+        if let Some(with) = &self.with {
+            let withs = with.split(',').map(|s| s.trim()).collect::<Vec<_>>();
+            if withs.contains(&"country") {
+                repo.with_country();
+            }
+            if withs.contains(&"group") {
+                repo.with_group();
+            }
+        }
+
+        if let Some(filter) = &self.filter {
+            let filters = filter.split(',').map(|s| s.trim()).collect::<Vec<_>>();
+            if filters.contains(&"still-in") {
+                repo.where_is_out(false);
+            }
+        }
     }
 }

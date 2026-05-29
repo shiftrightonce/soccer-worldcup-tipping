@@ -7,11 +7,14 @@ use dirtybase_app::{
         types::{ArcStrField, ArcUuid7, BooleanField, DateTimeField, IntegerField, LabelField},
     },
     db_macro::DirtyTable,
+    helper::time::current_datetime,
 };
 use dirtybase_common::anyhow;
 use serde::{Deserialize, Serialize};
 
-use crate::dirtybase_entry::model::{game::Game, group::Group, tournament::Tournament};
+use crate::dirtybase_entry::model::{
+    game::Game, group::Group, strategy_result::StrategyResult, tip::Tip, tournament::Tournament,
+};
 
 #[derive(Debug, Default, Clone, Serialize, DirtyTable, ts_rs::TS)]
 #[ts(export)]
@@ -24,6 +27,10 @@ pub struct TipStrategy {
     pub(crate) tournament: Option<Tournament>,
     #[dirty(rel(kind = "belongs_to"))]
     pub(crate) group: Option<Group>,
+    #[dirty(rel(kind = "has_many"))]
+    pub(crate) tips: Option<Vec<Tip>>,
+    #[dirty(rel(kind = "has_one"))]
+    pub(crate) result: Option<StrategyResult>,
 
     #[ts(type = "string")]
     pub(crate) id: Option<ArcUuid7>,
@@ -64,7 +71,10 @@ impl TipStrategyRepo {
         tournament_id: ArcUuid7,
         id: ArcUuid7,
     ) -> Result<Option<TipStrategy>, anyhow::Error> {
-        self.with_tournament().with_game().with_group();
+        self.with_tournament()
+            .with_game()
+            .with_group()
+            .with_result();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.by_id(id).await
     }
@@ -78,12 +88,47 @@ impl TipStrategyRepo {
         self.get().await
     }
 
+    pub async fn all_open_by_tournament_id(
+        &mut self,
+        tournament_id: ArcUuid7,
+    ) -> Result<Vec<TipStrategy>, anyhow::Error> {
+        self.with_tournament()
+            .with_game()
+            .with_group()
+            .with_result();
+        self.builder
+            .is_eq(Self::col_tournament_id(), tournament_id)
+            .le_or_eq(Self::col_opens_at(), current_datetime())
+            .gt(Self::col_ends_at(), current_datetime())
+            .not_eq(Self::col_completed(), true)
+            .asc(Self::col_ends_at());
+        self.get().await
+    }
+
+    pub async fn all_closed_by_tournament_id(
+        &mut self,
+        tournament_id: ArcUuid7,
+    ) -> Result<Vec<TipStrategy>, anyhow::Error> {
+        self.with_tournament()
+            .with_game()
+            .with_group()
+            .with_result();
+        self.builder
+            .is_eq(Self::col_tournament_id(), tournament_id)
+            .le_or_eq(Self::col_ends_at(), current_datetime())
+            .or_eq(Self::col_completed(), true);
+        self.get().await
+    }
+
     pub async fn paginate_by_tournament(
         &mut self,
         tournament_id: ArcUuid7,
         page: Option<PaginateBuilder>,
     ) -> PaginateResult<TipStrategy> {
-        self.with_tournament().with_game().with_group();
+        self.with_tournament()
+            .with_game()
+            .with_group()
+            .with_result();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.paginate(page).await
     }
@@ -93,7 +138,10 @@ impl TipStrategyRepo {
         tournament_id: ArcUuid7,
         record: TipStrategy,
     ) -> Result<TipStrategy, anyhow::Error> {
-        self.with_tournament().with_game().with_group();
+        self.with_tournament()
+            .with_game()
+            .with_group()
+            .with_result();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.update(record).await
     }

@@ -10,13 +10,14 @@ const routes: RouteRecordRaw[] = [
     path: '/secure',
     component: () => import('layouts/PlaneLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/secure/ScoreBoardPage.vue'), name: 'scoreboard' },
-      { path: 'tips', component: () => import('pages/secure/TipsPage.vue'), name: 'tips' },
+      { path: '/', component: () => import('pages/secure/ScoreBoardPage.vue'), name: 'scoreboard' },
+      { path: 'active-tips/:tournamentId?', component: () => import('pages/secure/TipsPage.vue'), name: 'active-tips', props: true },
       { path: 'manage-tip/:tournamentId/:tipStrategyId/:id?', component: () => import('pages/secure/TipManagePage.vue'), props: true, name: 'manage-tip' },
       {
-        path: 'past-tips',
+        path: 'past-tips/:tournamentId?',
         component: () => import('pages/secure/PastTipsPage.vue'),
         name: 'past-tips',
+        props: true
       },
       { path: 'chat', component: () => import('pages/secure/ChatPage.vue'), name: 'chat' },
       { path: 'account', component: () => import('pages/secure/AccountPage.vue'), name: 'account' },

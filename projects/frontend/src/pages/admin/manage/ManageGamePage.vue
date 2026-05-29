@@ -32,12 +32,10 @@
 
       <div class="row">
         <div class="col-3 q-pa-sm">
-          <q-select outlined v-model="model.data.countryAId" :options="countries" map-options emit-value
-            option-value="id" option-label="name" label="Country A" />
+          <SelectACountry :countries="countries" label="Country A" v-model="model.data.countryAId" />
         </div>
         <div class="col-3 q-pa-sm">
-          <q-select outlined v-model="model.data.countryBId" :options="countries" map-options emit-value
-            option-value="id" option-label="name" label="Country B" />
+          <SelectACountry :countries="countries" label="Country B" v-model="model.data.countryBId" />
         </div>
         <div class="col-3 q-pa-sm">
           <q-input type="text" outlined label="Label" v-model="model.data.label" />
@@ -96,6 +94,7 @@ import DateTimeComponent from 'src/components/DateTimeComponent.vue';
 import type { GamePayload } from 'src/api/v1/GamePayload';
 import { useRouter } from 'vue-router';
 import { stageKeyValue, gameStatusKeyValue } from 'src/general/lists'
+import SelectACountry from 'src/components/SelectACountryComponent.vue';
 
 const router = useRouter()
 const countries = reactive<Array<Country>>([])

@@ -68,7 +68,10 @@
           Calculate Points On
           <date-time-component v-model="model.data.calculatePointsOn"></date-time-component>
 
-          <q-checkbox v-model="model.data.completed" label="Completed" />
+          <div v-if="tipStrategy">
+            <div class="text-h6 q-mt-md">End Result</div>
+            <tip-card-component :tip-strategy="tipStrategy" forResult></tip-card-component>
+          </div>
         </div>
       </div>
     </q-form>
@@ -78,21 +81,23 @@
 </template>
 
 <script setup lang="ts">
-import TipStrategyClient, { makeNewPayload } from 'src/api/v1/clients/StrategyClient'
+import TipStrategyClient, { makeNewPayload } from 'src/api/v1/clients/TipStrategyClient'
 import GameClient from 'src/api/v1/clients/GameClient'
 import DateTimeComponent from 'src/components/DateTimeComponent.vue';
 import { strategyTypeKeyValue, strategyTypeList } from 'src/general/lists';
 import { useUserStore } from 'src/stores/user-store';
-import { onMounted, reactive, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import type { Game } from 'src/api/Game';
 import GroupClient from 'src/api/v1/clients/GroupClient';
 import type { Group } from 'src/api/Group';
 import { useRouter } from 'vue-router';
 import type { TipStrategyPayload } from 'src/api/v1/TipStrategyPayload';
+import type { TipStrategy } from 'src/api/TipStrategy';
+import TipCardComponent from 'src/components/tip/TipCardComponent.vue';
 
 const userStore = useUserStore()
 const props = defineProps<{ tournamentId: string, id?: string }>()
-const client = TipStrategyClient(userStore.authHeader(), props.tournamentId)
+const tipStrategyClient = TipStrategyClient(userStore.authHeader(), props.tournamentId)
 const gameClient = GameClient(userStore.authHeader(), props.tournamentId)
 const groupClient = GroupClient(userStore.authHeader())
 const typeKV = strategyTypeKeyValue
@@ -101,6 +106,7 @@ const games = reactive<Game[]>([])
 const groups = reactive<Group[]>([])
 const router = useRouter()
 
+const tipStrategy = ref<TipStrategy | null>(null)
 const model = reactive({ data: makeNewPayload() })
 model.data.tournamentId = props.tournamentId;
 
@@ -120,7 +126,7 @@ const onChangeGroup = (groupId: string) => {
 }
 
 const doSave = async () => {
-  const response = await client.save(model.data, props.id);
+  const response = await tipStrategyClient.save(model.data, props.id);
   return response.data
 }
 const deleteRecord = () => { }
@@ -173,8 +179,10 @@ const saveRecordAndNew = async () => {
 onMounted(async () => {
   try {
     if (props.id) {
-      const response = await client.byId(props.id);
+      const response = await tipStrategyClient.byId(props.id);
+      console.log('>>>> response from server', response.data);
       if (response.data) {
+        tipStrategy.value = response.data
         model.data = response.data as TipStrategyPayload
       }
     }
@@ -182,15 +190,6 @@ onMounted(async () => {
     const gamesResponse = await gameClient.all()
     if (gamesResponse.data) {
       gamesResponse.data.forEach((g) => games.push(g))
-      // gamesResponse.data.sort((a, b) => {
-      //   if (a.count > b.count) {
-      //     return 1
-      //   } else if (a.count < b.count) {
-      //     return -1
-      //   } else {
-      //     return 0
-      //   }
-      // }).forEach((g) => games.push(g))
     }
 
   } catch (e) {

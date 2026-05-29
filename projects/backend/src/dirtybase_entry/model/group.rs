@@ -97,4 +97,20 @@ impl CountryGroupRepo {
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.by_id(id).await
     }
+
+    pub async fn by_tournament_and_group(
+        &mut self,
+        tournament_id: ArcUuid7,
+        group_id: ArcUuid7,
+    ) -> Result<Vec<CountryGroup>, anyhow::Error> {
+        self.with_country().with_group().with_tournament();
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.builder.is_eq(Self::col_group_id(), group_id);
+        self.get().await
+    }
+
+    pub fn where_is_out(&mut self, is_out: bool) -> &mut Self {
+        self.builder.is_eq(Self::col_is_out(), is_out);
+        self
+    }
 }

@@ -253,7 +253,7 @@ fn groups() -> Vec<Group> {
     let start = 65;
     for i in start..=90 {
         if let Some(ch) = char::from_u32(i) {
-            list.push(Group::new(&format!("Group {ch}")));
+            list.push(Group::new(&format!("{ch}")));
         }
     }
 

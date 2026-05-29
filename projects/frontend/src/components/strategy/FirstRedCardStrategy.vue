@@ -1,12 +1,6 @@
 <template>
-  <SelectCountries
-    v-model="model"
-    :countries="countries"
-    :tip-strategy="props.tipStrategy"
-    :max="1"
-    label="First to get a red card"
-  >
-
+  <SelectCountries v-model="model" :countries="countries" :tip-strategy="props.tipStrategy" :max="1"
+    :is-closed="props.isClosed" label="First to get a red card">
   </SelectCountries>
 </template>
 
@@ -14,10 +8,25 @@
 import type { Strategy } from 'src/api/Strategy';
 import type { TipStrategy } from 'src/api/TipStrategy';
 import SelectCountries from './SelectCountries.vue';
-import { useCountryStore } from 'src/stores/country-store';
+import type { Country } from 'src/api/Country';
+import { onMounted, ref } from 'vue';
 
-const props = defineProps<{tipStrategy: TipStrategy}>()
-const [model, _] = defineModel<Strategy>({required: true })
-const countries = useCountryStore().countries
+const props = defineProps<{ tipStrategy: TipStrategy, isClosed: boolean }>()
+const [model, _] = defineModel<Strategy>({ required: true })
+const countries = ref<Country[]>([])
+
+onMounted(() => {
+  countries.value.push(props.tipStrategy.game?.countryA as Country)
+  countries.value.push(props.tipStrategy.game?.countryB as Country)
+
+  if (props.tipStrategy.result?.strategyResults) {
+    const resultEntry = props.tipStrategy.result.strategyResults.find((entry) => entry.kind === 'first_red_card')
+    if (resultEntry) {
+      model.value.entry = resultEntry.entry
+    }
+  } else if (!model.value.entry) {
+    model.value.entry = countries.value[Math.floor(Math.random() * countries.value.length)]?.id as string
+  }
+})
 
 </script>

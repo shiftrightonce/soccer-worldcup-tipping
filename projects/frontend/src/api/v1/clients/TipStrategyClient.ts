@@ -2,13 +2,15 @@ import type { TipStrategy } from "src/api/TipStrategy";
 import type { TipStrategyPayload } from "../TipStrategyPayload";
 import type { ApiResponse } from "./BaseClient";
 import { BaseClient } from "./BaseClient";
+import type { StrategyResultPayload } from "../StrategyResultPayload";
+import type { StrategyResult } from "src/api/StrategyResult";
 
 export type TipStrategyResult = ApiResponse<TipStrategy>;
 
 export class TipStrategyClient extends BaseClient {
 
   constructor(authHeader: Headers, tournamentId: string) {
-    const baseUrl = `/api/v1/strategies/${tournamentId}`
+    const baseUrl = `/api/v1/tip-strategies/${tournamentId}`
     super(authHeader, baseUrl)
   }
 
@@ -16,8 +18,21 @@ export class TipStrategyClient extends BaseClient {
     return await this.getMany('all', params)
   }
 
-  public async byId (id: string): Promise<TipStrategyResult> {
-    return await this.getOne(id)
+  public async open (params?: URLSearchParams): Promise<ApiResponse<TipStrategy[]>> {
+    return await this.getMany('open', params)
+  }
+
+  public async closed (params?: URLSearchParams): Promise<ApiResponse<TipStrategy[]>> {
+    return await this.getMany('closed', params)
+  }
+
+  public async byId (id: string, params?: URLSearchParams): Promise<TipStrategyResult> {
+    return await this.getOne(id, params)
+  }
+
+  public async saveResults (id: string, payload: StrategyResultPayload, params?: URLSearchParams): Promise<ApiResponse<StrategyResult>> {
+    const data = JSON.stringify(payload)
+    return await this.post(`results/${id}`, data, params)
   }
 
   public async save (payload: TipStrategyPayload, id?: string,): Promise<TipStrategyResult> {
@@ -42,6 +57,10 @@ export const makeNewPayload = (): TipStrategyPayload => ({
   calculatePointsOn: '',
   completed: false,
   strategyTypes: []
+})
+
+export const makeNewResultPayload = (): StrategyResultPayload => ({
+  strategyResults: []
 })
 
 export const TipStrategyToPayload = (data: TipStrategy): TipStrategyPayload => {

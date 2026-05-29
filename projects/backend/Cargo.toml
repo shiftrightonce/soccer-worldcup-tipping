@@ -45,6 +45,7 @@ dirtybase_3rd_client = { path = "../../../dirtybase/packages/3rd_client" }
 # ] }
 # dirtybase_realtime = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_realtime" }
 # dirtybase_common = { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_common" }
+# dirtybase_cron= { git = "https://github.com/kpama/dirtybase.git", branch = "dev", package = "dirtybase_cron" }
 
 # for testing start
 dirtybase_contract = { path = "../../../dirtybase/contract" }
@@ -53,6 +54,7 @@ dirtybase_app = { path = "../../../dirtybase/packages/app", features = [
 ] }
 dirtybase_realtime = { path = "../../../dirtybase/packages/realtime" }
 dirtybase_common = { path = "../../../dirtybase/packages/common" }
+dirtybase_cron = { path = "../../../dirtybase/packages/cron" }
 # for testing end 
 
 tokio = { version = "1.52.3", features = ["full"] }

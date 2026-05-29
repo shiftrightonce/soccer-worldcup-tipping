@@ -2,28 +2,16 @@
   <q-layout view="lHr LpR lFr">
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
-        <q-btn
-          dense
-          flat
-          round
-          icon="menu"
-          @click="layoutStore.toggleLeftDrawer"
-          v-if="layoutStore.isLeftDrawerEnabled"
-        />
+        <q-btn dense flat round icon="menu" @click="layoutStore.toggleLeftDrawer"
+          v-if="layoutStore.isLeftDrawerEnabled" />
 
         <q-toolbar-title>
           <AppLogo></AppLogo>
           {{ layoutStore.title }}
         </q-toolbar-title>
 
-        <q-btn
-          dense
-          flat
-          round
-          icon="menu"
-          @click="layoutStore.toggleRighDrawer"
-          v-if="layoutStore.isRightDrawerEnabled"
-        />
+        <q-btn dense flat round icon="menu" @click="layoutStore.toggleRighDrawer"
+          v-if="layoutStore.isRightDrawerEnabled" />
       </q-toolbar>
     </q-header>
 
@@ -53,6 +41,9 @@ import AppLogo from 'src/components/general/AppLogo.vue';
 const userStore = useUserStore();
 const _menuStore = useMenuStore();
 const layoutStore = useLayoutStore();
+
+layoutStore.setTitle('Soccer Worldcup Tipping')
+layoutStore.activeLeftDrawer(false)
 
 if (!userStore.isLogin) {
   // router.push({ name: 'home' })

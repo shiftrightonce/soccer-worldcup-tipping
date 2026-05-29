@@ -51,6 +51,10 @@ pub fn register_routes(manager: &mut RouterManager) {
                     country_group_controller::create_handler,
                     ["can:country-group:create"],
                 )
+                .get_x(
+                    "/by-group/{group_id}",
+                    country_group_controller::by_group_handler,
+                )
                 .get_x("/{id}", country_group_controller::get_handler)
                 .put_x_with_middleware(
                     "/{id}",
@@ -59,15 +63,22 @@ pub fn register_routes(manager: &mut RouterManager) {
                 );
         });
 
-        // Strategies
-        router.nest("/strategies/{tournament_id}", |router| {
+        // Tip Strategies
+        router.nest("/tip-strategies/{tournament_id}", |router| {
             router
                 .get_x("/", tip_strategy_controller::list_handler)
                 .get_x("/all", tip_strategy_controller::all_handler)
+                .get_x("/open", tip_strategy_controller::all_open_handler)
+                .get_x("/closed", tip_strategy_controller::all_closed_handler)
                 .post_x_with_middleware(
                     "/",
                     tip_strategy_controller::create_handler,
                     ["can:strategy:create"],
+                )
+                .post_x_with_middleware(
+                    "/results/{id}",
+                    tip_strategy_controller::create_result_handler,
+                    ["can:strategy-result:create"],
                 )
                 .get_x("/{id}", tip_strategy_controller::get_handler)
                 .put_x_with_middleware(
@@ -95,6 +106,14 @@ pub fn register_routes(manager: &mut RouterManager) {
                     game_controller::update_handler,
                     ["can:games:update"],
                 );
+        });
+
+        router.nest("/tips/{tournament_id}", |router| {
+            router
+                .get_x_with_middleware("/", tip_controller::list_handler, ["can:tips:view-all"])
+                .get_x("/my-tips", tip_controller::my_tips_handler)
+                .post_x("/my-tips", tip_controller::create_handler)
+                .put_x("/my-tips/{id}", tip_controller::update_handler);
         });
 
         // Users

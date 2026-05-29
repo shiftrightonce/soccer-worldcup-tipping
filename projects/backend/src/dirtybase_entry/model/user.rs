@@ -26,13 +26,13 @@ impl UserData {
 #[dirty(id_not_auto, timestamp, soft_deletable)]
 pub struct User {
     #[ts(type = "string")]
-    id: Option<ArcUuid7>,
+    pub(crate) id: Option<ArcUuid7>,
     email: StringField,
     #[dirty(embedded)]
-    data: UserData,
+    pub(crate) data: UserData,
     #[dirty(rel(kind = "belongs_to"))]
     #[ts(type = "object")]
-    actor: Option<Actor>,
+    pub(crate) actor: Option<Actor>,
     #[dirty(rel(
         kind = "has_many_through",
         soft_deletable,
@@ -43,15 +43,15 @@ pub struct User {
         foreign_col = "id"))
     ]
     #[ts(type = "object")]
-    actor_roles: Option<Vec<ActorRole>>,
+    pub(crate) actor_roles: Option<Vec<ActorRole>>,
     #[ts(type = "string")]
-    auth_actor_id: Option<ArcUuid7>,
+    pub(crate) auth_actor_id: Option<ArcUuid7>,
     #[ts(type = "Date | null")]
-    created_at: CreatedAtField,
+    pub(crate) created_at: CreatedAtField,
     #[ts(type = "Date | null")]
-    updated_at: UpdatedAtField,
+    pub(crate) updated_at: UpdatedAtField,
     #[ts(type = "Date | null")]
-    deleted_at: DeletedAtField,
+    pub(crate) deleted_at: DeletedAtField,
 }
 
 impl User {

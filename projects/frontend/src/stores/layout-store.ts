@@ -1,13 +1,5 @@
 import { defineStore } from 'pinia';
-import { LoadingBar } from 'quasar';
 import { computed, ref } from 'vue';
-
-LoadingBar.setDefaults({
-  hijackFilter (url) {
-    // Only hijack api requests
-    return url.indexOf('/api/') > 1;
-  },
-});
 
 const APP_VERSION = '0.0.6';
 let watchingForUpdate = false;
@@ -26,7 +18,7 @@ export const useLayoutStore = defineStore('layoutStore', {
     title: (state) => state.layoutTitle,
     appVersion: (state) => state.version,
     isLeftDrawerEnabled: (state) => state.enableLeftDrawer,
-    isRightDrawerEnabled: () => true,
+    isRightDrawerEnabled: (state) => state.enableRightDrawer,
   },
   actions: {
     setTitle (title: string) {
