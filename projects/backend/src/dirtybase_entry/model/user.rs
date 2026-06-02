@@ -1,9 +1,16 @@
 use dirtybase_app::{
-    db::types::{ArcUuid7, CreatedAtField, DeletedAtField, StringField, UpdatedAtField},
+    db::{
+        base::helper::generate_ulid,
+        types::{ArcUuid7, CreatedAtField, DeletedAtField, StringField, UpdatedAtField},
+    },
     db_macro::DirtyTable,
 };
 use dirtybase_common::anyhow;
-use dirtybase_contract::auth_contract::{Actor, ActorRole};
+use dirtybase_contract::{
+    auth_contract::{Actor, ActorRole},
+    prelude::{Context, Observable},
+};
+use identicon_rs::Identicon;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Clone, DirtyTable, Serialize, Deserialize, ts_rs::TS)]
@@ -27,7 +34,8 @@ impl UserData {
 pub struct User {
     #[ts(type = "string")]
     pub(crate) id: Option<ArcUuid7>,
-    email: StringField,
+    pub(crate) email: StringField,
+    avatar: Option<StringField>,
     #[dirty(embedded)]
     pub(crate) data: UserData,
     #[dirty(rel(kind = "belongs_to"))]
@@ -63,6 +71,39 @@ impl User {
             ..Default::default()
         }
     }
+
+    pub fn generate_avatar(&mut self) -> anyhow::Result<String> {
+        let mut image = Identicon::new(&self.email);
+        let avater_dir = "public/avatar";
+        let name = format!("{}.png", generate_ulid());
+        let avatar_path = format!("{}/{}", &avater_dir, name);
+
+        if let Err(e) = std::fs::create_dir_all(avater_dir) {
+            anyhow::bail!("Failed to create avatar directory: {e}");
+        }
+
+        image.set_border(10);
+
+        if let Err(e) = image.set_scale(100) {
+            anyhow::bail!("could not set image scale: {}", e);
+        }
+
+        match image.export_png_data() {
+            Ok(bytes) => {
+                if let Err(e) = std::fs::write(&avatar_path, bytes) {
+                    anyhow::bail!("Failed to save avatar: {e}");
+                }
+            }
+            Err(e) => anyhow::bail!("Failed to generate avatar: {e}"),
+        }
+
+        if let Err(e) = image.save_image(&avatar_path) {
+            anyhow::bail!("Failed to save avatar: {e}");
+        }
+
+        self.avatar = Some(name.clone().into());
+        Ok(avatar_path)
+    }
 }
 
 impl UserRepo {
@@ -73,4 +114,44 @@ impl UserRepo {
 
         self.one().await
     }
+
+    pub async fn register(&mut self, user: User, context: Context) -> Result<User, anyhow::Error> {
+        let u = self.insert(user).await?;
+        //
+        let mut repo = self.clone();
+        let mut user = u.clone();
+
+        tokio::spawn(async move {
+            // Generate avater
+            if let Err(e) = user.generate_avatar() {
+                return tracing::error!("Failed to save avatar: {e}");
+            } else {
+                if let Err(e) = repo.update(user.clone()).await {
+                    return tracing::error!("Failed to update user with avatar: {e}");
+                }
+                if let Ok(Some(user)) = repo
+                    .with_actor()
+                    .with_actor_roles()
+                    .by_id(user.id.unwrap())
+                    .await
+                {
+                    UserCreated { user }.notify(&context).await;
+                }
+            }
+        });
+
+        Ok(u)
+    }
 }
+
+pub struct UserCreated {
+    user: User,
+}
+
+impl UserCreated {
+    pub fn user_ref(&self) -> &User {
+        &self.user
+    }
+}
+
+impl Observable for UserCreated {}

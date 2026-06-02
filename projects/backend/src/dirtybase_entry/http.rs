@@ -1,5 +1,6 @@
 mod api;
 mod general;
+mod open_api;
 
 use dirtybase_contract::prelude::RouterManager;
 
@@ -13,4 +14,7 @@ pub(crate) fn register_routes(manager: &mut RouterManager) {
 
     // v1 routes
     api::v1::register_routes(manager);
+
+    // open api routes
+    open_api::register_routes(manager);
 }

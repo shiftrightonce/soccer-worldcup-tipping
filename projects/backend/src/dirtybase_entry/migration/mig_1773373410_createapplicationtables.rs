@@ -11,12 +11,12 @@ use crate::dirtybase_entry::model::chat_room_user::ChatRoomUser;
 use crate::dirtybase_entry::model::country::Country;
 use crate::dirtybase_entry::model::game::Game;
 use crate::dirtybase_entry::model::group::{CountryGroup, Group};
-use crate::dirtybase_entry::model::queue_job::QueueJob;
 use crate::dirtybase_entry::model::strategy_result::StrategyResult;
 use crate::dirtybase_entry::model::tip::Tip;
 use crate::dirtybase_entry::model::tip_strategy::TipStrategy;
 use crate::dirtybase_entry::model::tournament::Tournament;
 use crate::dirtybase_entry::model::user::User;
+use crate::dirtybase_entry::model::user_validation::UserValidation;
 
 pub struct Mig1773373410CreateApplicationTables;
 
@@ -85,84 +85,6 @@ impl Migration for Mig1773373410CreateApplicationTables {
             })
             .await?;
 
-        // Tip Strategy
-        manager
-            .create_table_schema(TipStrategy::table_name(), |bp| {
-                bp.uuid_as_id(None);
-                bp.string(TipStrategy::col_name_for_label())
-                    .set_is_nullable(true);
-                bp.text(TipStrategy::col_name_for_description())
-                    .set_is_nullable(true);
-                bp.uuid_table_fk::<Game>(true).set_is_nullable(true);
-                bp.uuid_table_fk::<Group>(true).set_is_nullable(true);
-                bp.uuid_table_fk::<Tournament>(true);
-                bp.timestamp(TipStrategy::col_name_for_opens_at());
-                bp.timestamp(TipStrategy::col_name_for_ends_at());
-                bp.timestamp(TipStrategy::col_name_for_calculate_points_on());
-                bp.boolean(TipStrategy::col_name_for_completed());
-                bp.json(TipStrategy::col_name_for_strategy_types())
-                    .default_is_empty_array();
-                bp.timestamps();
-                bp.soft_deletable();
-
-                bp.unique_index(&[
-                    TipStrategy::col_name_for_tournament_id(),
-                    TipStrategy::col_name_for_game_id(),
-                ]);
-                bp.unique_index(&[
-                    TipStrategy::col_name_for_tournament_id(),
-                    TipStrategy::col_name_for_group_id(),
-                ]);
-            })
-            .await?;
-
-        manager
-            .create_table_schema(StrategyResult::table_name(), |bp| {
-                bp.uuid_as_id(None);
-                bp.uuid_table_fk::<TipStrategy>(true);
-                bp.json(StrategyResult::col_name_for_strategy_results())
-                    .default_is_empty_array();
-                bp.timestamps();
-                bp.soft_deletable();
-                bp.unique_index(&[StrategyResult::col_name_for_tip_strategy_id()]);
-            })
-            .await?;
-
-        // Tip
-        manager
-            .create_table_schema(Tip::table_name(), |bp| {
-                bp.uuid_as_id(None);
-                bp.uuid_table_fk::<Tournament>(true);
-                bp.uuid_table_fk::<User>(true);
-                bp.uuid_table_fk::<TipStrategy>(true);
-                bp.json(Tip::col_name_for_strategies())
-                    .default_is_empty_object();
-                bp.json(Tip::col_name_for_tip_strategy_pts())
-                    .default_is_empty_array();
-                bp.integer(Tip::col_name_for_points()).default_is_zero();
-                bp.timestamps();
-                bp.soft_deletable();
-
-                bp.unique_index(&[
-                    Tip::col_name_for_tournament_id(),
-                    Tip::col_name_for_tip_strategy_id(),
-                ]);
-            })
-            .await?;
-
-        // Users
-        manager
-            .create_table_schema(User::table_name(), |bp| {
-                bp.uuid_as_id(None);
-                bp.string(User::col_name_for_email());
-                bp.json(User::col_name_for_data()).nullable();
-                bp.uuid_table_fk::<Actor>(true)
-                    .set_is_nullable(true)
-                    .set_is_unique(true);
-                bp.timestamps();
-                bp.soft_deletable();
-            })
-            .await?;
         // Game
         manager
             .create_table_schema(Game::table_name(), |bp| {
@@ -209,6 +131,100 @@ impl Migration for Mig1773373410CreateApplicationTables {
                     Game::col_name_for_tournament_id(),
                     Game::col_name_for_country_a_id(),
                     Game::col_name_for_country_b_id(),
+                ]);
+            })
+            .await?;
+
+        // Tip Strategy
+        manager
+            .create_table_schema(TipStrategy::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.string(TipStrategy::col_name_for_label())
+                    .set_is_nullable(true);
+                bp.text(TipStrategy::col_name_for_description())
+                    .set_is_nullable(true);
+                bp.uuid_table_fk::<Game>(true).set_is_nullable(true);
+                bp.uuid_table_fk::<Group>(true).set_is_nullable(true);
+                bp.uuid_table_fk::<Tournament>(true);
+                bp.timestamp(TipStrategy::col_name_for_opens_at());
+                bp.timestamp(TipStrategy::col_name_for_ends_at());
+                bp.timestamp(TipStrategy::col_name_for_calculate_points_on());
+                bp.boolean(TipStrategy::col_name_for_completed());
+                bp.json(TipStrategy::col_name_for_strategy_types())
+                    .default_is_empty_array();
+                bp.timestamps();
+                bp.soft_deletable();
+
+                bp.unique_index(&[
+                    TipStrategy::col_name_for_tournament_id(),
+                    TipStrategy::col_name_for_game_id(),
+                ]);
+                bp.unique_index(&[
+                    TipStrategy::col_name_for_tournament_id(),
+                    TipStrategy::col_name_for_group_id(),
+                ]);
+            })
+            .await?;
+
+        // Tip Strategy Result
+        manager
+            .create_table_schema(StrategyResult::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.uuid_table_fk::<TipStrategy>(true);
+                bp.json(StrategyResult::col_name_for_strategy_results())
+                    .default_is_empty_array();
+                bp.timestamps();
+                bp.soft_deletable();
+                bp.unique_index(&[StrategyResult::col_name_for_tip_strategy_id()]);
+            })
+            .await?;
+
+        // Users
+        manager
+            .create_table_schema(User::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.string(User::col_name_for_email());
+                bp.string(User::col_name_for_avatar()).nullable();
+                bp.json(User::col_name_for_data()).nullable();
+                bp.uuid_table_fk::<Actor>(true)
+                    .set_is_nullable(true)
+                    .set_is_unique(true);
+                bp.timestamps();
+                bp.soft_deletable();
+            })
+            .await?;
+
+        // User Validation
+        manager
+            .create_table_schema(UserValidation::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.uuid_table_fk::<User>(true);
+                bp.string(UserValidation::col_name_for_token());
+                bp.string(UserValidation::col_name_for_purpose());
+                bp.datetime(UserValidation::col_name_for_expires());
+                bp.timestamps();
+                bp.soft_deletable();
+            })
+            .await?;
+
+        // Tip
+        manager
+            .create_table_schema(Tip::table_name(), |bp| {
+                bp.uuid_as_id(None);
+                bp.uuid_table_fk::<Tournament>(true);
+                bp.uuid_table_fk::<User>(true);
+                bp.uuid_table_fk::<TipStrategy>(true);
+                bp.json(Tip::col_name_for_strategies())
+                    .default_is_empty_object();
+                bp.json(Tip::col_name_for_tip_strategy_pts())
+                    .default_is_empty_array();
+                bp.integer(Tip::col_name_for_points()).default_is_zero();
+                bp.timestamps();
+                bp.soft_deletable();
+
+                bp.unique_index(&[
+                    Tip::col_name_for_tournament_id(),
+                    Tip::col_name_for_tip_strategy_id(),
                 ]);
             })
             .await?;
@@ -274,35 +290,23 @@ impl Migration for Mig1773373410CreateApplicationTables {
             })
             .await?;
 
-        // queue jobs
-        manager
-            .create_table_schema(QueueJob::table_name(), |bp| {
-                bp.uuid_as_id(None);
-                bp.string(QueueJob::col_name_for_job_type());
-                bp.json(QueueJob::col_name_for_payload()).nullable();
-                bp.string(QueueJob::col_name_for_status());
-                bp.json(QueueJob::col_name_for_log()).nullable();
-                bp.timestamps();
-            })
-            .await?;
-
         Ok(())
     }
 
     async fn down(&self, manager: &Manager, _: &Context) -> Result<(), anyhow::Error> {
         manager.drop_table(Tip::table_name()).await?;
-        manager.drop_table(TipStrategy::table_name()).await?;
         manager.drop_table(StrategyResult::table_name()).await?;
+        manager.drop_table(TipStrategy::table_name()).await?;
         manager.drop_table(Game::table_name()).await?;
         manager.drop_table(ChatMessage::table_name()).await?;
         manager.drop_table(ChatRoomUser::table_name()).await?;
         manager.drop_table(ChatRoom::table_name()).await?;
+        manager.drop_table(UserValidation::table_name()).await?;
         manager.drop_table(User::table_name()).await?;
         manager.drop_table(CountryGroup::table_name()).await?;
         manager.drop_table(Group::table_name()).await?;
         manager.drop_table(Country::table_name()).await?;
         manager.drop_table(Tournament::table_name()).await?;
-        manager.drop_table(QueueJob::table_name()).await?;
         Ok(())
     }
 }

@@ -1,3 +1,4 @@
+pub mod email;
 mod event;
 mod event_handler;
 mod http;
@@ -10,6 +11,7 @@ use dirtybase_app::db::base::manager::Manager;
 use dirtybase_contract::cli_contract::prelude::ArgMatches;
 use dirtybase_contract::prelude::*;
 
+use crate::dirtybase_entry::email::{EmailSender, SmtpWrapper};
 use crate::dirtybase_entry::model::country::CountryRepo;
 use crate::dirtybase_entry::model::game::GameRepo;
 use crate::dirtybase_entry::model::group::{CountryGroupRepo, GroupRepo};
@@ -18,6 +20,7 @@ use crate::dirtybase_entry::model::tip::TipRepo;
 use crate::dirtybase_entry::model::tip_strategy::TipStrategyRepo;
 use crate::dirtybase_entry::model::tournament::TournamentRepo;
 use crate::dirtybase_entry::model::user::UserRepo;
+use crate::dirtybase_entry::model::user_validation::UserValidationRepo;
 
 pub const ADMIN_ROLE: &'static str = "administrator";
 pub const PLAYER_ROLE: &'static str = "player";
@@ -27,8 +30,17 @@ pub struct Extension;
 
 #[dirtybase_contract::async_trait]
 impl dirtybase_contract::ExtensionSetup for Extension {
-    async fn setup(&mut self, _global_context: &Context) {
+    async fn setup(&mut self, global_context: &Context) {
         event_handler::setup().await;
+
+        global_context
+            .container_ref()
+            .resolver(|_| async {
+                let smtp_wrapper = SmtpWrapper;
+                EmailSender::new(smtp_wrapper)
+            })
+            .await;
+
         ContextResourceManager::scoped("tournament_repo", |ctx| async move {
             let manager = ctx.get::<Manager>().await?;
             Ok(TournamentRepo::new(&manager))
@@ -72,6 +84,11 @@ impl dirtybase_contract::ExtensionSetup for Extension {
         ContextResourceManager::scoped("tip_result_repo", |ctx| async move {
             let manager = ctx.get::<Manager>().await?;
             Ok(StrategyResultRepo::new(&manager))
+        })
+        .await;
+        ContextResourceManager::scoped("user_validation_repo", |ctx| async move {
+            let manager = ctx.get::<Manager>().await?;
+            Ok(UserValidationRepo::new(&manager))
         })
         .await;
 

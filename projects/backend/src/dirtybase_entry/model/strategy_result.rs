@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use dirtybase_app::{
     db::{
@@ -11,8 +11,8 @@ use dirtybase_common::anyhow;
 use serde::Serialize;
 
 use crate::dirtybase_entry::model::{
-    tip::TipRepo,
-    tip_strategy::{Strategy, TipStrategyRepo},
+    tip::{StrategyPoint, TipRepo},
+    tip_strategy::{Strategy, StrategyType, TipStrategyRepo},
 };
 
 #[derive(Debug, Clone, Default, Serialize, DirtyTable, ts_rs::TS)]
@@ -90,27 +90,54 @@ impl StrategyResultRepo {
         Ok(())
     }
 
-    async fn do_calculation(id: ArcUuid7, manager: &Manager) {
-        let mut strategy_result_repo = StrategyResultRepo::new(manager);
-        if let Ok(Some(tip_strategy_result)) = strategy_result_repo.by_id(id).await {
-            let mut tip_repo = TipRepo::new(manager);
-            let tips = tip_repo
-                .all_by_tip_strategy_id(tip_strategy_result.tip_strategy_id.clone())
-                .await
-                .unwrap_or_default();
-            tracing::error!(
-                "total tips to process for tip strategy id {}: {}",
-                tip_strategy_result.tip_strategy_id,
-                tips.len()
-            );
-            for tip in tips {
-                // Here you would calculate the points for each tip based on the strategy result and update the tip accordingly
-                tracing::info!(
-                    "Calculating points for tip id: {} based on strategy result id: {}",
-                    tip.id.clone().unwrap_or_default(),
-                    tip_strategy_result.id.clone().unwrap_or_default()
+    async fn do_calculation(id: ArcUuid7, m: &Manager) {
+        let manager = m.clone();
+        tokio::spawn(async move {
+            let mut strategy_result_repo = StrategyResultRepo::new(&manager);
+            if let Ok(Some(tip_strategy_result)) = strategy_result_repo.by_id(id).await {
+                let mut tip_repo = TipRepo::new(&manager);
+                let mut tips_page = tip_repo
+                    .paginate_by_tip_strategy_id(tip_strategy_result.tip_strategy_id.clone(), None)
+                    .await;
+                let strategies = HashMap::<StrategyType, Strategy>::from_iter(
+                    tip_strategy_result
+                        .strategy_results
+                        .iter()
+                        .map(|s| (s.strategy_type(), s.clone())),
                 );
+
+                loop {
+                    let tips = tips_page.data_ref().as_ref().unwrap_or(&vec![]).clone();
+                    if tips.is_empty() {
+                        break;
+                    }
+                    tracing::debug!("Calculating points for {} tips", tips.len());
+
+                    for mut tip in tips {
+                        tip.points = 0;
+                        for a_strategy in tip.strategies.iter() {
+                            if let Some(b_strategy) = strategies.get(&a_strategy.strategy_type()) {
+                                let strategy_point = StrategyPoint {
+                                    strategy: a_strategy.strategy_type(),
+                                    points: a_strategy.compare_and_score(b_strategy),
+                                };
+                                tip.points += strategy_point.points;
+                                tip.tip_strategy_pts.insert(strategy_point);
+                            }
+                        }
+                        if let Err(e) = tip_repo.update(tip).await {
+                            tracing::error!("Failed to update tip with new points: {}", e);
+                        }
+
+                        tips_page = tip_repo
+                            .paginate_by_tip_strategy_id(
+                                tip_strategy_result.tip_strategy_id.clone(),
+                                tips_page.next_ref().cloned(),
+                            )
+                            .await;
+                    }
+                }
             }
-        }
+        });
     }
 }

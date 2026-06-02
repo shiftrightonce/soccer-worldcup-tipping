@@ -69,3 +69,7 @@ ts-rs = { version = "12.0.1", features = [
   "format",
   "no-serde-warnings",
 ] }
+identicon-rs = "7.2.0"
+validator = "0.20.0"
+lettre = { version = "0.11.22", features = ["tokio1", "tokio1-native-tls"] }
+async-trait = "0.1.89"

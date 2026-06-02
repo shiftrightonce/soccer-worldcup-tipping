@@ -223,6 +223,173 @@ pub enum Strategy {
     Final(#[ts(type = "string[]")] [ArcUuid7; 2]),
 }
 
+impl Strategy {
+    pub fn strategy_type(&self) -> StrategyType {
+        match self {
+            Strategy::Winner(_) => StrategyType::Winner,
+            Strategy::Goals { .. } => StrategyType::Goals,
+            Strategy::CupWinner(_) => StrategyType::CupWinner,
+            Strategy::GameToPenalty(_) => StrategyType::GameToPenalty,
+            Strategy::FirstRedCard(_) => StrategyType::FirstRedCard,
+            Strategy::FirstYellowCard(_) => StrategyType::FirstYellowCard,
+            Strategy::PenaltyGoals { .. } => StrategyType::PenaltyGoals,
+            Strategy::GroupRanking(_) => StrategyType::GroupRanking,
+            Strategy::Round32Qualifiers(_) => StrategyType::Round32Qualifiers,
+            Strategy::Round16Qualifiers(_) => StrategyType::Round16Qualifiers,
+            Strategy::Round8Qualifiers(_) => StrategyType::Round8Qualifiers,
+            Strategy::Round4Qualifiers(_) => StrategyType::Round4Qualifiers,
+            Strategy::ThirdPlaceQualifiers(_) => StrategyType::ThirdQualifiers,
+            Strategy::Final(_) => StrategyType::Final,
+        }
+    }
+    pub fn compare_and_score(&self, other: &Strategy) -> i64 {
+        match (self, other) {
+            (Strategy::Winner(a), Strategy::Winner(b)) => {
+                if a == b {
+                    5
+                } else {
+                    0
+                }
+            }
+            (
+                Strategy::Goals {
+                    country_a_goals: a_a,
+                    country_b_goals: a_b,
+                },
+                Strategy::Goals {
+                    country_a_goals: b_a,
+                    country_b_goals: b_b,
+                },
+            ) => {
+                if a_a == b_a && a_b == b_b {
+                    10
+                } else if a_a == b_a || a_b == b_b {
+                    5
+                } else {
+                    0
+                }
+            }
+            (Strategy::CupWinner(a), Strategy::CupWinner(b)) => {
+                if a == b {
+                    10
+                } else {
+                    0
+                }
+            }
+            (Strategy::GameToPenalty(a), Strategy::GameToPenalty(b)) => {
+                if a == b {
+                    5
+                } else {
+                    0
+                }
+            }
+            (Strategy::FirstRedCard(a), Strategy::FirstRedCard(b)) => {
+                if a == b {
+                    5
+                } else {
+                    0
+                }
+            }
+
+            (Strategy::FirstYellowCard(a), Strategy::FirstYellowCard(b)) => {
+                if a == b {
+                    5
+                } else {
+                    0
+                }
+            }
+            (
+                Strategy::PenaltyGoals {
+                    country_a_goals: a_a,
+                    country_b_goals: a_b,
+                },
+                Strategy::PenaltyGoals {
+                    country_a_goals: b_a,
+                    country_b_goals: b_b,
+                },
+            ) => {
+                if a_a == b_a && a_b == b_b {
+                    10
+                } else if a_a == b_a || a_b == b_b {
+                    5
+                } else {
+                    0
+                }
+            }
+            (Strategy::GroupRanking(a), Strategy::GroupRanking(b)) => {
+                let mut score = 0;
+                for (pos_a, team_a) in a.iter().enumerate() {
+                    if let Some(pos_b) = b.iter().position(|team_b| team_b == team_a) {
+                        if pos_a == pos_b {
+                            score += 5;
+                        }
+                    }
+                }
+                score
+            }
+
+            (Strategy::Round32Qualifiers(a), Strategy::Round32Qualifiers(b)) => {
+                let mut score = 0;
+                for team_a in a.iter() {
+                    if b.contains(team_a) {
+                        score += 5;
+                    }
+                }
+                score
+            }
+
+            (Strategy::Round16Qualifiers(a), Strategy::Round16Qualifiers(b)) => {
+                let mut score = 0;
+                for team_a in a.iter() {
+                    if b.contains(team_a) {
+                        score += 5;
+                    }
+                }
+                score
+            }
+
+            (Strategy::Round8Qualifiers(a), Strategy::Round8Qualifiers(b)) => {
+                let mut score = 0;
+                for team_a in a.iter() {
+                    if b.contains(team_a) {
+                        score += 5;
+                    }
+                }
+                score
+            }
+            (Strategy::Round4Qualifiers(a), Strategy::Round4Qualifiers(b)) => {
+                let mut score = 0;
+                for team_a in a.iter() {
+                    if b.contains(team_a) {
+                        score += 5;
+                    }
+                }
+                score
+            }
+            (Strategy::ThirdPlaceQualifiers(a), Strategy::ThirdPlaceQualifiers(b)) => {
+                let mut score = 0;
+                for team_a in a.iter() {
+                    if b.contains(team_a) {
+                        score += 5;
+                    }
+                }
+                score
+            }
+
+            (Strategy::Final(a), Strategy::Final(b)) => {
+                let mut score = 0;
+                for team_a in a.iter() {
+                    if b.contains(team_a) {
+                        score += 5;
+                    }
+                }
+                score
+            }
+            _ => 0, // Different strategy types cannot be compared, so score is 0.
+        }
+    }
+}
+
 impl From<Strategy> for FieldValue {
     fn from(value: Strategy) -> Self {
         FieldValue::String(serde_json::to_string(&value).expect("could not serialise strategy"))

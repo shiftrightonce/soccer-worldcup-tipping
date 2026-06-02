@@ -1,14 +1,10 @@
 <template>
-  <div
-    v-if="!userStore.isLogin"
-    class="col-12 index-menu"
-    style="
-      background-image: url('img/bg_1.jpg');
+  <div v-if="!userStore.isLogin" class="col-12 index-menu" style="
+      background-image: url('img/bg_1_old.jpg');
       background-size: cover;
       background-position: center center;
       min-height: 100vh;
-    "
-  >
+    ">
     <div class="row justify-evenly">
       <div class="col-12 q-mt-md">
         <div class="row">
@@ -26,10 +22,7 @@
 
       <div class="col-9 q-mt-md q-mb-xs-lg">
         <div class="row">
-          <div
-            class="q-ml-auto col-md-6 col-sm-12 q-pa-md bg-blue-grey-10"
-            style="border-radius: 10px"
-          >
+          <div class="q-ml-auto col-md-6 col-sm-12 q-pa-md bg-blue-grey-10" style="border-radius: 10px">
             <SignupForm></SignupForm>
           </div>
         </div>

@@ -2,6 +2,7 @@ import type { Tip } from "src/api/Tip";
 import type { TipPayload } from "../TipPayload"
 import type { ApiResponse } from "./BaseClient";
 import { BaseClient } from "./BaseClient"
+import type { Point } from "src/api/Point";
 
 export class TipClient extends BaseClient {
 
@@ -24,6 +25,10 @@ export class TipClient extends BaseClient {
     }
     return response
 
+  }
+
+  public async leaderBoard (): Promise<ApiResponse<Point[]>> {
+    return await this.getMany('leader-board')
   }
 
 }

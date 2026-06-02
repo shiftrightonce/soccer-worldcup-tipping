@@ -101,7 +101,9 @@ impl Migration for Mig1778062247CreateDefaultAdmin {
             .expect("could not create user's actor")
         {
             let actor_id = actor.id().cloned().unwrap();
-            let user = User::new(&email, actor_id.clone());
+            let mut user = User::new(&email, actor_id.clone());
+            user.generate_avatar()
+                .expect("could not generate avatar for admin");
             user_repo.insert(user).await.expect("could not create user");
             let actor_role = PersistActorRolePayload::Save {
                 record: ActorRole::new(actor_id, roles[0].id().cloned().unwrap()),

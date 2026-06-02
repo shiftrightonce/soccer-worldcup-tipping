@@ -111,6 +111,8 @@ pub fn register_routes(manager: &mut RouterManager) {
         router.nest("/tips/{tournament_id}", |router| {
             router
                 .get_x_with_middleware("/", tip_controller::list_handler, ["can:tips:view-all"])
+                .get_x("/leader-board", tip_controller::leader_board_handler)
+                .get_x("/my-points", tip_controller::my_points_handler)
                 .get_x("/my-tips", tip_controller::my_tips_handler)
                 .post_x("/my-tips", tip_controller::create_handler)
                 .put_x("/my-tips/{id}", tip_controller::update_handler);

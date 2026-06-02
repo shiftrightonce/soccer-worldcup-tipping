@@ -4,7 +4,7 @@ use dirtybase_app::{
     db::{
         base::paginate_builder::{PaginateBuilder, PaginateResult},
         field_values::FieldValue,
-        types::{ArcUuid7, DateTimeField, IntegerField},
+        types::{ArcUuid7, DateTimeField, FromColumnAndValue, IntegerField, StringField},
     },
     db_macro::DirtyTable,
 };
@@ -50,8 +50,8 @@ pub struct Tip {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct StrategyPoint {
-    strategy: StrategyType,
-    points: u64,
+    pub(crate) strategy: StrategyType,
+    pub(crate) points: i64,
 }
 
 impl From<StrategyPoint> for FieldValue {
@@ -78,6 +78,59 @@ impl TipRepo {
         self.with_tournament().with_tip_strategy();
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
         self.paginate(page).await
+    }
+
+    pub async fn leader_board_by_tournament_id(
+        &mut self,
+        tournament_id: ArcUuid7,
+    ) -> anyhow::Result<Vec<Point>> {
+        let kind = self.manager.db_kind().as_str().to_lowercase();
+        let placeholder = if kind == "postgres" || kind == "postgresql" {
+            "$1"
+        } else {
+            "?"
+        };
+
+        let sql = format!("SELECT u.id AS user_id, a.username AS username, 
+  COALESCE(SUM(tips.points), 0) AS total_points
+  FROM users u 
+  LEFT JOIN auth_actors a ON a.id = u.auth_actor_id
+LEFT JOIN tips ON tips.user_id = u.id WHERE tips.tournament_id = {} GROUP BY u.id ORDER BY total_points DESC LIMIT 25", placeholder);
+
+        let result = self.manager.raw_select(&sql, vec![tournament_id]).await?;
+        Ok(result
+            .into_iter()
+            .map(|entry| Point::from_column_value(entry).unwrap())
+            .collect())
+    }
+
+    pub async fn user_points_by_tournament_id(
+        &mut self,
+        tournament_id: ArcUuid7,
+        user_id: ArcUuid7,
+    ) -> anyhow::Result<Option<Point>> {
+        let kind = self.manager.db_kind().as_str().to_lowercase();
+        let placeholders = if kind == "postgres" || kind == "postgresql" {
+            ("$1", "$2")
+        } else {
+            ("?", "?")
+        };
+
+        let sql = format!("SELECT u.id AS user_id, a.username AS username, 
+  COALESCE(SUM(tips.points), 0) AS total_points
+  FROM users u 
+  LEFT JOIN auth_actors a ON a.id = u.auth_actor_id
+LEFT JOIN tips ON tips.user_id = u.id WHERE tips.tournament_id = {} AND tips.user_id = {} GROUP BY u.id ORDER BY total_points DESC", placeholders.0, placeholders.1);
+
+        let result = self
+            .manager
+            .raw_select(&sql, vec![tournament_id, user_id])
+            .await?;
+        if let Some(first) = result.first().cloned() {
+            return Ok(Some(Point::from_column_value(first)?));
+        }
+
+        Ok(None)
     }
 
     pub async fn list_by_tournament_id(
@@ -160,5 +213,54 @@ impl TipRepo {
         self.builder
             .is_eq(Self::col_tip_strategy_id(), tip_strategy_id);
         self.get().await
+    }
+
+    pub async fn paginate_by_tip_strategy_id(
+        &mut self,
+        tip_strategy_id: ArcUuid7,
+        page: Option<PaginateBuilder>,
+    ) -> PaginateResult<Tip> {
+        self.with_tournament().with_tip_strategy();
+        self.builder
+            .is_eq(Self::col_tip_strategy_id(), tip_strategy_id);
+        self.paginate(page).await
+    }
+}
+
+#[derive(Debug, Default, Clone, Serialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct Point {
+    #[ts(type = "string")]
+    user_id: ArcUuid7,
+    username: StringField,
+    #[ts(type = "number")]
+    total_points: i64,
+}
+
+impl FromColumnAndValue for Point {
+    fn from_column_value(
+        column_and_value: dirtybase_app::db::types::ColumnAndValue,
+    ) -> Result<Self, anyhow::Error>
+    where
+        Self: Sized,
+    {
+        Ok(Self {
+            user_id: column_and_value
+                .get("user_id")
+                .cloned()
+                .unwrap_or_default()
+                .into(),
+            username: column_and_value
+                .get("username")
+                .cloned()
+                .unwrap_or_default()
+                .into(),
+            total_points: column_and_value
+                .get("total_points")
+                .cloned()
+                .unwrap_or_default()
+                .into(),
+        })
     }
 }

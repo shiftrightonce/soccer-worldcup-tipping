@@ -14,8 +14,8 @@ export const useUserStore = defineStore('userStore', {
     user: null as null | User,
   }),
   getters: {
-    isLogin: () => true,
-    isAdmin: () => true,
+    isLogin: () => false,
+    isAdmin: () => false,
     avatar: (state) => `/public/user/${state.user?.id || 'placeholder'}.png`,
     token: (state) => state.activeToken,
   },
@@ -30,5 +30,39 @@ export const useUserStore = defineStore('userStore', {
         ['Content-Type', 'application/json'],
       ]);
     },
+    prizes () {
+      return [
+        {
+          image: '/prizes/1st_place.jpg',
+          title: 'First Place',
+          position: 1,
+          description: ''
+        },
+        {
+          image: '/prizes/2nd_place.jpg',
+          title: 'Second Place',
+          position: 2,
+          description: ''
+        },
+        {
+          image: '/prizes/3rd_place.jpg',
+          title: 'Third Place',
+          position: 3,
+          description: ''
+        }
+      ]
+    },
+    loginWithToken (_token: string) {
+      // TODO: fully implement
+      return true;
+    },
+    requestPasswordReset (_email: string) {
+      // TODO: fully implement
+      return {
+        data: {
+          message: 'function needs implemenation'
+        }
+      }
+    }
   },
 });

@@ -2,11 +2,9 @@
   <div class="row justify-center q-mt-xl">
     <div class="col-md-8 col-xs-12">
       <div class="row justify-center">
-        <div class="col-md-auto q-mr-md-md q-mb-xs-md">
+        <div class="col-md-auto q-mr-md-md q-mb-xs-md q-pa-lg">
           Made with 💕 by
-          <a href="https://github.com/shiftrightonce/soccer-worldcup-tipping" target="_blank"
-            >Jibao</a
-          >
+          <a href="https://github.com/shiftrightonce/soccer-worldcup-tipping" target="_blank">Jibao</a>
         </div>
       </div>
     </div>

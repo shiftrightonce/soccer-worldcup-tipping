@@ -15,7 +15,7 @@ use dirtybase_contract::{
 use serde::Deserialize;
 
 use crate::dirtybase_entry::model::{
-    tip::{Tip, TipRepo},
+    tip::{Point, Tip, TipRepo},
     tip_strategy::{Strategy, TipStrategyRepo},
     user::UserRepo,
 };
@@ -30,6 +30,30 @@ pub async fn list_handler(
             .paginate_by_tournament_id(tournament_id, Some(page))
             .await,
     )
+}
+
+pub async fn leader_board_handler(
+    CtxExt(mut tip_repo): CtxExt<TipRepo>,
+    Path(tournament_id): Path<ArcUuid7>,
+) -> impl IntoResponse {
+    ApiResponse::from(tip_repo.leader_board_by_tournament_id(tournament_id).await)
+}
+
+pub async fn my_points_handler(
+    CtxExt(mut tip_repo): CtxExt<TipRepo>,
+    CtxExt(mut user_repo): CtxExt<UserRepo>,
+    CtxExt(actor): CtxExt<Actor>,
+    Path(tournament_id): Path<ArcUuid7>,
+) -> impl IntoResponse {
+    if let Ok(Some(user)) = user_repo.by_actor_id(actor.id().cloned().unwrap()).await {
+        ApiResponse::from(
+            tip_repo
+                .user_points_by_tournament_id(tournament_id, user.id.clone().unwrap())
+                .await,
+        )
+    } else {
+        ApiResponse::<Point>::not_found()
+    }
 }
 
 pub async fn my_tips_handler(
