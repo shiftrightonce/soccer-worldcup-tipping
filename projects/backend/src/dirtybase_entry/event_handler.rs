@@ -1,6 +1,7 @@
 use dirtybase_contract::prelude::Observable;
 
 use crate::dirtybase_entry::{
+    TipConfig,
     email::EmailSender,
     model::{
         user::UserCreated,
@@ -14,6 +15,13 @@ pub(crate) async fn setup() {
             repo
         } else {
             tracing::error!("could not get user validation repo");
+            return event;
+        };
+
+        let tip_config = if let Ok(c) = ctx.get_config::<TipConfig>("tip_config").await {
+            c
+        } else {
+            tracing::error!("could not get application config");
             return event;
         };
 
@@ -36,12 +44,14 @@ pub(crate) async fn setup() {
 
                     let token = record.token();
 
+                    let user_id = &event.user_ref().id.clone().unwrap_or_default();
                     let username = if let Some(actor) = &event.user_ref().actor {
                         actor.username().to_string()
                     } else {
                         "Unknown".to_string()
                     };
-                    let validation_link = format!("http:://validation-link.com?token={}", token);
+                    let validation_link =
+                        format!("{}?token={}", &tip_config.user_validation_url, token);
 
                     let replace = [
                         ("{{username}}", username),

@@ -22,7 +22,7 @@ pub struct UserValidation {
     pub(crate) id: ArcUuid7,
     pub(crate) user_id: ArcUuid7,
     token: StringField, // The full token is generated "record_id|token" and base64 encoded
-    pub(crate) purpose: StringField,
+    pub(crate) purpose: ValidationPurpose,
     pub(crate) expires: DateTimeField,
     pub(crate) created_at: CreatedAtField,
     pub(crate) updated_at: UpdatedAtField,
@@ -30,7 +30,7 @@ pub struct UserValidation {
 }
 
 impl UserValidationRepo {
-    pub async fn validate(&mut self, token: &str) -> anyhow::Result<bool> {
+    pub async fn validate(&mut self, token: &str) -> anyhow::Result<UserValidation> {
         let bytes =
             base64::url_decode(token).map_err(|e| anyhow::anyhow!("invalid token: {}", e))?;
         let token_string =
@@ -38,15 +38,17 @@ impl UserValidationRepo {
 
         let pieces = token_string
             .split('|')
-            .filter(|e| e.trim().len() > 6)
+            .filter(|e| e.trim().len() >= 6)
             .take(2)
             .map(String::from)
             .collect::<Vec<String>>();
 
+        tracing::info!("token pieces: {:#?}", &pieces);
         if pieces.len() < 2 {
-            return Ok(false);
+            return Err(anyhow::anyhow!("token is not valid"));
         }
 
+        self.with_user();
         self.builder
             .is_eq(Self::col_id(), pieces[0].clone())
             .is_eq(Self::col_token(), pieces[1].clone())
@@ -54,15 +56,16 @@ impl UserValidationRepo {
 
         match self.one().await {
             Ok(Some(record)) => {
-                if let Err(e) = self.destroy(record).await {
+                if let Err(e) = self.destroy(record.clone()).await {
                     tracing::error!("could not deleted validated user validation: {}", e);
                 }
-                return Ok(true);
+
+                return Ok(record);
             }
-            Ok(None) => return Ok(false),
+            Ok(None) => return Err(anyhow::anyhow!("entry does not exist")),
             Err(e) => {
                 tracing::error!("error fetching user validation: {}", e);
-                return Ok(false);
+                return Err(anyhow::anyhow!("could not process request as this time"));
             }
         };
     }
@@ -100,7 +103,7 @@ impl UserValidation {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub enum ValidationPurpose {
     #[default]
     Email,

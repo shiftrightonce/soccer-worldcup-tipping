@@ -1,3 +1,4 @@
+mod config;
 pub mod email;
 mod event;
 mod event_handler;
@@ -22,6 +23,8 @@ use crate::dirtybase_entry::model::tournament::TournamentRepo;
 use crate::dirtybase_entry::model::user::UserRepo;
 use crate::dirtybase_entry::model::user_validation::UserValidationRepo;
 
+pub use config::*;
+
 pub const ADMIN_ROLE: &'static str = "administrator";
 pub const PLAYER_ROLE: &'static str = "player";
 
@@ -32,6 +35,13 @@ pub struct Extension;
 impl dirtybase_contract::ExtensionSetup for Extension {
     async fn setup(&mut self, global_context: &Context) {
         event_handler::setup().await;
+
+        if let Err(e) = global_context
+            .get_config_once::<TipConfig>("tip_config")
+            .await
+        {
+            panic!("could not load application config: {}", e);
+        }
 
         global_context
             .container_ref()

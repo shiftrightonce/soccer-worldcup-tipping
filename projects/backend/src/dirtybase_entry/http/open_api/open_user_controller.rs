@@ -1,18 +1,26 @@
-use dirtybase_app::{axum::Json, db::types::ArcUuid7};
+use dirtybase_app::{
+    auth::AuthConfig, axum::Json, clap::error::ErrorKind::ValueValidation, db::types::ArcUuid7,
+    helper::time::now,
+};
+use dirtybase_common::anyhow;
 use dirtybase_contract::{
     auth_contract::{
-        Actor, ActorPayload, ActorRole, AuthUserStatus, PermStorageProvider, PermissionStorage,
+        Actor, ActorPayload, ActorRole, AuthUserStatus, FetchActorOption, FetchActorPayload,
+        PermStorageProvider, PermissionManager, PermissionRepo, PermissionStorage,
         PersistActorPayload, PersistActorRolePayload,
     },
     http_contract::api::{ApiError, ApiResponse},
-    prelude::{Context, CtxExt, IntoResponse, Path},
+    prelude::{Context, CtxExt, IntoResponse, Path, axum_extra::extract::Query},
 };
 use serde::Deserialize;
 use validator::*;
 
 use crate::dirtybase_entry::{
     PLAYER_ROLE,
-    model::user::{User, UserRepo},
+    model::{
+        user::{User, UserRepo},
+        user_validation::{UserValidationRepo, ValidationPurpose},
+    },
 };
 
 pub async fn sginup_handler(
@@ -76,12 +84,54 @@ pub async fn sginup_handler(
     ApiResponse::error("Failed to create user")
 }
 
-pub fn verify_email_handler(
-    CtxExt(mut user_repo): CtxExt<UserRepo>,
+pub async fn verify_email_handler(
+    CtxExt(mut repo): CtxExt<UserValidationRepo>,
+    CtxExt(auth_config): CtxExt<AuthConfig>,
     CtxExt(storage): CtxExt<PermStorageProvider>,
-    Path((user_id, token)): Path<(ArcUuid7, String)>,
+    Query(data): Query<VerifyEmailQuery>,
 ) -> impl IntoResponse {
-    ApiResponse::success("Email verified")
+    tracing::info!("token from user request: {}", &data.token);
+    match repo.validate(&data.token).await {
+        Ok(record) => {
+            if let Some(user) = record.user {
+                let payload = FetchActorPayload::ById {
+                    id: user.auth_actor_id.unwrap(),
+                };
+                let mut option = FetchActorOption::default();
+                option.with_actor_roles = true;
+                option.with_roles = true;
+
+                if let Ok(Some(mut actor)) = storage.fetch_actor(payload, Some(option)).await {
+                    let mut payload = ActorPayload::new();
+                    payload = match record.purpose {
+                        ValidationPurpose::Email => {
+                            payload.verified_at = Some(now().as_datetime());
+                            payload.status = Some(AuthUserStatus::Active);
+                            payload.reset_password = Some(false);
+                            payload
+                        }
+                        ValidationPurpose::PasswordReset => {
+                            payload.reset_password = Some(true);
+                            payload
+                        }
+                    };
+
+                    actor.merge(payload);
+                    let data = PersistActorPayload::Save {
+                        actor: actor.clone(),
+                    };
+
+                    return ApiResponse::from(
+                        save_actor_and_generate_token(actor, data, &storage, &auth_config).await,
+                    );
+                }
+            }
+        }
+        Err(e) => {
+            tracing::error!("error validating: {}", e);
+        }
+    }
+    ApiResponse::forbidden().with_message("validation failed")
 }
 
 pub fn reset_password_request_handler(
@@ -97,4 +147,27 @@ pub fn reset_password_request_handler(
 pub struct ResetPasswordRequestPayload {
     #[validate(email(message = "must be a valid email address"))]
     pub email: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct VerifyEmailQuery {
+    token: String,
+}
+
+pub async fn save_actor_and_generate_token(
+    mut actor: Actor,
+    data: PersistActorPayload,
+    storage: &PermStorageProvider,
+    auth_config: &AuthConfig,
+) -> Result<String, anyhow::Error> {
+    _ = storage.save_actor(data).await?;
+    if let Some(role) = actor.roles().first().cloned() {
+        actor.set_current_role(role);
+    }
+
+    if let Ok(token) = actor.generate_signed_jwt(auth_config.jwt_key().as_ref()) {
+        return Ok(token);
+    }
+
+    Err(anyhow::anyhow!("No role assigned to actor"))
 }
