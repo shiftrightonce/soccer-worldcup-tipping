@@ -1,31 +1,34 @@
 import { defineStore } from 'pinia';
 import { LocalStorage } from 'quasar';
-import type { User } from 'src/api/User';
+import type { SignInReponse } from 'src/api/v1/SignInReponse';
 
-const tokenKey = '_t';
-const vapidKey = 'vapid';
-const token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsInN1YiI6IjAxOWU2YTA0LWE1OGYtNzcyMS05OTU4LWIwZjIwNjAyY2UyNSIsImV4cCI6MTc4MjQ4NzM5MywiaWF0IjoxNzc5ODk1MzkzLCJuYmYiOjE3Nzk4OTUzOTMsImp0aSI6IjFmZWQzYTViMGE0NjNiODI1N2QyMGQ5OTE1ZDBiOGRiNjE1NWE1NmRlNDY4NjFhOTE0NDE3OTdlYjkwNTNlNzUiLCJpc3MiOm51bGwsInByaXZhdGUiOnsiX2FyIjoiMDE5ZTZhMDQtYTE1My03YzAzLThmMWUtMjAyOTJhN2E3NjBlIn19.x88Wy-icyhrpXm-z-WK8JkNF8EMSUH0DzwybKOiYM1o';
+const userKey = '_u';
 
 export const useUserStore = defineStore('userStore', {
-  state: () => ({
-    activeToken: LocalStorage.getItem(tokenKey),
-    vapid: LocalStorage.getItem(vapidKey),
-    user: null as null | User,
-  }),
+  state: () => {
+    const data: SignInReponse | null = LocalStorage.getItem(userKey);
+    return {
+      activeToken: data ? data.token : '',
+      vapid: data?.user.data.pushSubscription,
+      loginData: data,
+    }
+  },
   getters: {
-    isLogin: () => false,
-    isAdmin: () => false,
-    avatar: (state) => `/public/user/${state.user?.id || 'placeholder'}.png`,
+    isLogin: (state) => state.activeToken || false,
+    isAdmin: (state) => {
+      if (!state.loginData) {
+        return false
+      }
+      return state.loginData.roles.findIndex((entry) => entry.name == 'administrator') > -1
+    },
+    avatar: (state) => `/assets/avartar/${state.loginData?.user.avatar || 'placeholder.png'}`,
     token: (state) => state.activeToken,
+    user: (state) => state.loginData?.user
   },
   actions: {
-    login (username: string, password: string) {
-      console.log('do login', { username, password });
-    },
     authHeader () {
       return new Headers([
-        ['Authorization', `Bearer ${token}`],
+        ['Authorization', `Bearer ${this.activeToken}`],
         ['Accept', 'application/json'],
         ['Content-Type', 'application/json'],
       ]);
@@ -51,6 +54,15 @@ export const useUserStore = defineStore('userStore', {
           description: ''
         }
       ]
+    },
+    setLoginData (data: SignInReponse) {
+      this.activeToken = data.token
+      LocalStorage.set(userKey, data);
+      window.location.reload()
+    },
+    clearLoginData () {
+      LocalStorage.clear()
+      this.loginData = null;
     },
     loginWithToken (_token: string) {
       // TODO: fully implement

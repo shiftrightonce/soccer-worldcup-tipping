@@ -94,6 +94,7 @@ import { useRouter } from 'vue-router';
 import type { TipStrategyPayload } from 'src/api/v1/TipStrategyPayload';
 import type { TipStrategy } from 'src/api/TipStrategy';
 import TipCardComponent from 'src/components/tip/TipCardComponent.vue';
+import type { StrategyType } from 'src/api/StrategyType';
 
 const userStore = useUserStore()
 const props = defineProps<{ tournamentId: string, id?: string }>()
@@ -115,6 +116,32 @@ const onChangeGame = (gameId: string) => {
     const game = games.find((g) => g.id === gameId);
     if (game) {
       model.data.label = game.count + ' - ' + game.countryA?.name + ' vs ' + game.countryB?.name
+      if (game.dateAndTime) {
+        model.data.endsAt = game.dateAndTime
+      }
+
+
+      if (game.count <= 72) {
+        [
+          'goals',
+          'first_red_card',
+          'first_yellow_card',
+          'winner',
+        ].forEach((entry) => {
+          model.data.strategyTypes.push(entry as StrategyType)
+        })
+      } else {
+        [
+          'goals',
+          'first_red_card',
+          'first_yellow_card',
+          'winner',
+          'penalty_goals',
+          'game_to_penalty',
+        ].forEach((entry) => {
+          model.data.strategyTypes.push(entry as StrategyType)
+        })
+      }
     }
   }
 }
@@ -180,7 +207,6 @@ onMounted(async () => {
   try {
     if (props.id) {
       const response = await tipStrategyClient.byId(props.id);
-      console.log('>>>> response from server', response.data);
       if (response.data) {
         tipStrategy.value = response.data
         model.data = response.data as TipStrategyPayload

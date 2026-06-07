@@ -5,27 +5,14 @@
         <div class="text-h4">Login in</div>
       </div>
       <div class="col-xs-12 col-md-12 q-pl-lg q-pr-lg q-mb-md">
-        <q-input
-          v-model="username"
-          label="Username"
-          outlined
-          @update:model-value="onInput"
-        ></q-input>
+        <q-input v-model="username" label="Username or Email" outlined @update:model-value="onInput"></q-input>
       </div>
       <div class="col-xs-12 col-md-12 q-pl-lg q-pr-lg q-mb-md">
-        <q-input
-          v-model="password"
-          label="Password"
-          outlined
-          @update:model-value="onInput"
-          :type="isPassword ? 'password' : 'text'"
-        >
+        <q-input v-model="password" label="Password" outlined @update:model-value="onInput"
+          :type="isPassword ? 'password' : 'text'">
           <template v-slot:append>
-            <q-icon
-              :name="isPassword ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="isPassword = !isPassword"
-            />
+            <q-icon :name="isPassword ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+              @click="isPassword = !isPassword" />
           </template>
         </q-input>
       </div>
@@ -34,13 +21,7 @@
       </div>
       <div class="col-xs-12 q-pl-lg q-pr-lg q-mt-lg q-mb-md">
         <div class="text-caption">
-          <q-btn
-            flat
-            dense
-            label="Having issue logging in? Click here"
-            no-caps
-            :to="{ name: 'forgot-login' }"
-          ></q-btn>
+          <q-btn flat dense label="Having issue logging in? Click here" no-caps :to="{ name: 'forgot-login' }"></q-btn>
         </div>
       </div>
     </div>
@@ -52,6 +33,7 @@ import { useUserStore } from 'src/stores/user-store';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
+import OpenApiClient from 'src/api/v1/clients/OpenApiClient';
 
 const emit = defineEmits<{
   'update:username': [value: string];
@@ -67,6 +49,7 @@ const password = ref('');
 const isPassword = ref(true);
 const userStore = useUserStore();
 const router = useRouter();
+const openClient = OpenApiClient()
 const $q = useQuasar();
 
 const onInput = () => {
@@ -78,12 +61,21 @@ const onInput = () => {
   });
 };
 
+if (userStore.isLogin) {
+  void router.push({ name: 'scoreboard' });
+}
+
 const onSignIn = () => {
   if (username.value && password.value) {
     void (async () => {
       try {
-        userStore.login(username.value, password.value);
-        await router.push({ name: 'scoreboard' });
+        const result = await openClient.login(username.value, password.value);
+        if (result.data) {
+          userStore.setLoginData(result.data);
+          await router.push({ name: 'scoreboard' });
+        } else {
+          throw Error()
+        }
       } catch (_e) {
         // @todo Make error message more helpful
         $q.dialog({

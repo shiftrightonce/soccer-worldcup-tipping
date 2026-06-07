@@ -58,7 +58,7 @@ export const makeNewPayload = (tournamentId: string): GamePayload => {
     countryBGoals: 0,
     countryAPenaltyGoals: 0,
     countryBPenaltyGoals: 0,
-    toConfigureOn: null,
+    dateAndTime: null,
     winnerId: null,
   }
 }

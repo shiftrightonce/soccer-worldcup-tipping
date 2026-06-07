@@ -23,8 +23,8 @@ export type Game = {
   countryBPenaltyGoals: number;
   winner: Country | null;
   winnerId: string;
-  toConfigureOn: Date | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
+  dateAndTime: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  deletedAt: string | null;
 };

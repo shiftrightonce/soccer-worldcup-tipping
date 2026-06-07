@@ -41,7 +41,7 @@
           <q-input type="text" outlined label="Label" v-model="model.data.label" />
         </div>
         <div class="col-3 q-pa-sm">
-          <date-time-component v-model="model.data.toConfigureOn"></date-time-component>
+          <date-time-component v-model="model.data.dateAndTime"></date-time-component>
         </div>
       </div>
       <div class="row">
@@ -91,7 +91,6 @@ import GameClient, { makeNewPayload } from 'src/api/v1/clients/GameClient';
 import { useUserStore } from 'src/stores/user-store';
 import { onMounted, reactive } from 'vue';
 import DateTimeComponent from 'src/components/DateTimeComponent.vue';
-import type { GamePayload } from 'src/api/v1/GamePayload';
 import { useRouter } from 'vue-router';
 import { stageKeyValue, gameStatusKeyValue } from 'src/general/lists'
 import SelectACountry from 'src/components/SelectACountryComponent.vue';
@@ -115,7 +114,7 @@ onMounted(async () => {
     if (props.id) {
       const response = await client.byId(props.id)
       if (response.data) {
-        model.data = response.data as GamePayload
+        model.data = response.data
         twoCountires.push(response.data.countryA as Country)
         twoCountires.push(response.data.countryB as Country)
         console.log('two countries', twoCountires)

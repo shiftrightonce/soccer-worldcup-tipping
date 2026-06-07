@@ -10,7 +10,6 @@
         <div class="row justify-center">
           <div class="col-auto q-mb-md q-mr-md-md q-pa-md">
             <div class="text-h4 text-bold text-deep-orange-8">Scoring System</div>
-            <p>
             <ul>
               <li>
                 1 point for predicting the winner of a match
@@ -35,7 +34,6 @@
                 If you predicted the exact score in a penalty shootout, you will also get 1 point for each goal.
               </li>
             </ul>
-            </p>
           </div>
         </div>
       </div>

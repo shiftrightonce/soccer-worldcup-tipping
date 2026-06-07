@@ -10,7 +10,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'contact-us', name: 'contact-us', component: () => import('pages/ContactPage.vue') },
       { path: 'prizes', name: 'prizes', component: () => import('pages/PrizePage.vue') },
       { path: 'login', name: 'login', component: () => import('pages/LoginPage.vue') },
-      { path: 'forgot-login', name: 'forgot-login', component: () => import('pages/ForgotLoginPage.vue') }
+      { path: 'forgot-login', name: 'forgot-login', component: () => import('pages/ForgotLoginPage.vue') },
+      { path: 'logout', component: () => import('pages/LogoutPage.vue'), name: 'logout' },
     ],
   },
   {
@@ -28,7 +29,6 @@ const routes: RouteRecordRaw[] = [
       },
       { path: 'chat', component: () => import('pages/secure/ChatPage.vue'), name: 'chat' },
       { path: 'account', component: () => import('pages/secure/AccountPage.vue'), name: 'account' },
-      { path: 'logout', component: () => import('pages/secure/LogoutPage.vue'), name: 'logout' },
     ],
   },
   {

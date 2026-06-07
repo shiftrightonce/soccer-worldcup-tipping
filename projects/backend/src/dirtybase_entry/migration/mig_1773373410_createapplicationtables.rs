@@ -104,7 +104,7 @@ impl Migration for Mig1773373410CreateApplicationTables {
                     true,
                     Some(Country::id_column()),
                 );
-                bp.datetime(Game::col_name_for_to_configure_on())
+                bp.datetime(Game::col_name_for_date_and_time())
                     .set_is_nullable(true);
                 bp.string(Game::col_name_for_status());
                 bp.string(Game::col_name_for_stage());

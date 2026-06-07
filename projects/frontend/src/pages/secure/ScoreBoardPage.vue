@@ -24,7 +24,7 @@ onMounted(async () => {
       const tipClient = TipClient(userStore.authHeader(), response.data[0]?.id || '')
       const r = await tipClient.leaderBoard();
       console.log('leader board response', r)
-    } else {
+    } else if (response.data.length > 1) {
       console.error('multiple tournaments');
     }
   }

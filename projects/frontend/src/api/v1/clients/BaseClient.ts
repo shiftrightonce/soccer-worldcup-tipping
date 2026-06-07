@@ -1,6 +1,6 @@
 export type ApiResponse<T> = {
   data: T | null;
-  metat: {
+  meta: {
     page?: {
       next: string;
       previous: string;

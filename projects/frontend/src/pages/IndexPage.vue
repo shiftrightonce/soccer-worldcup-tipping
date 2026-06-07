@@ -33,21 +33,23 @@
 
 <script setup lang="ts">
 import { useUserStore } from 'src/stores/user-store';
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import SignupForm from 'src/components/login_signup/SignupForm.vue';
 import { useLayoutStore } from 'src/stores/layout-store';
+import { onMounted } from 'vue';
 
 const userStore = useUserStore();
-// const router = useRouter()
+const router = useRouter()
 const layoutStore = useLayoutStore();
 
 layoutStore.activeLeftDrawer(false);
 layoutStore.activeRightDrawer(false);
 
-// FIXME: Uncomment when ready
-if (userStore.isLogin) {
-  // router.push({ name: 'scoreboard' })
-}
+onMounted(async () => {
+  if (userStore.isLogin) {
+    await router.push({ name: 'scoreboard' })
+  }
+})
 </script>
 
 <style scoped>

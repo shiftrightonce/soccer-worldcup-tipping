@@ -128,7 +128,7 @@ const onEditClick = async (id: string) => {
 
 onMounted(async () => {
   try {
-    const params = new URLSearchParams({ _sort: "-id" })
+    const params = new URLSearchParams({ _sort: "id", _limit: "400" })
     const response = await client.paginate(params)
     if (response.data) {
       result.value = response.data

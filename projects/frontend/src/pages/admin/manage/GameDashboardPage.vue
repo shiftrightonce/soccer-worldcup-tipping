@@ -86,6 +86,12 @@ const columns = [
     align: 'left',
   },
   {
+    name: 'stage',
+    label: 'Stage',
+    field: 'stage',
+    align: 'left'
+  },
+  {
     name: 'countryA',
     label: 'country A',
     field: 'countryA',
@@ -100,10 +106,11 @@ const columns = [
     format: (val: Country, _: Game) => val.name
   },
   {
-    name: 'toConfigureOn',
-    label: 'To Configure On',
-    field: 'toConfigureOn',
+    name: 'dateAndTime',
+    label: 'Date and Time',
+    field: 'dateAndTime',
     align: 'left',
+    format: (val: string | null, _row: Game) => (val ? new Date(val).toLocaleString() : ''),
   },
   {
     name: 'createdAt',
@@ -138,7 +145,7 @@ const onEditClick = async (id: string) => {
 
 onMounted(async () => {
   try {
-    const params = new URLSearchParams({ _sort: "-count" })
+    const params = new URLSearchParams({ _sort: "-count", _limit: "200" })
     const response = await client.all(params)
     if (response.data) {
       result.value = response.data

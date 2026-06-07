@@ -4,6 +4,7 @@ import type { UserData } from "./UserData";
 export type User = {
   id: string;
   email: string;
+  avatar: string | null;
   data: UserData;
   actor: object;
   actorRoles: object;

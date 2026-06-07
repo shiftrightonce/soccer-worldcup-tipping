@@ -32,12 +32,13 @@
 <script setup lang="ts">
 import { useMenuStore } from 'src/stores/menu-store';
 import { useUserStore } from 'src/stores/user-store';
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useLayoutStore } from '../stores/layout-store';
 import MainMenu from '../components/general/MainMenu.vue';
 import AppLogo from 'src/components/general/AppLogo.vue';
+import { onMounted } from 'vue';
 
-// const router = useRouter()
+const router = useRouter()
 const userStore = useUserStore();
 const _menuStore = useMenuStore();
 const layoutStore = useLayoutStore();
@@ -45,9 +46,11 @@ const layoutStore = useLayoutStore();
 layoutStore.setTitle('Soccer Worldcup Tipping')
 layoutStore.activeLeftDrawer(false)
 
-if (!userStore.isLogin) {
-  // router.push({ name: 'home' })
-} else {
-  // userStore.setupSocket()
-}
+onMounted(async () => {
+  if (!userStore.isLogin) {
+    await router.push({ name: 'home' })
+  } else {
+    // userStore.setupSocket()
+  }
+})
 </script>

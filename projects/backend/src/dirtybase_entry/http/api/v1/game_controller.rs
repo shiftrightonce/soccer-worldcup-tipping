@@ -28,6 +28,13 @@ pub async fn all_handler(
     ApiResponse::from(repo.all_by_tournament(tournament_id).await)
 }
 
+pub async fn list_for_strategy_handler(
+    CtxExt(mut repo): CtxExt<GameRepo>,
+    Path(tournament_id): Path<ArcUuid7>,
+) -> impl IntoResponse {
+    ApiResponse::from(repo.all_unassiged_by_tournament(tournament_id).await)
+}
+
 pub async fn by_status_handler(
     CtxExt(mut repo): CtxExt<GameRepo>,
     Path((tournament_id, status)): Path<(ArcUuid7, GameStatus)>,
@@ -92,7 +99,7 @@ pub(crate) struct GamePayload {
     #[ts(type = "string | null")]
     pub(crate) winner_id: Option<ArcUuid7>,
     #[ts(type = "string | null")]
-    pub(crate) to_configure_on: Option<DateTimeField>,
+    pub(crate) date_and_time: Option<DateTimeField>,
     #[ts(type = "number | null")]
     pub(crate) country_a_penalty_goals: Option<IntegerField>,
     #[ts(type = "number | null")]
@@ -117,8 +124,8 @@ impl GamePayload {
             game.label = label;
         }
 
-        if let Some(to_configure_on) = self.to_configure_on {
-            game.to_configure_on = Some(to_configure_on);
+        if let Some(datetime) = self.date_and_time {
+            game.date_and_time = Some(datetime);
         }
 
         if let Some(count) = self.count {

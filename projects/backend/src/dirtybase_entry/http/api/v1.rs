@@ -98,6 +98,7 @@ pub fn register_routes(manager: &mut RouterManager) {
             router
                 .get_x("/", game_controller::list_handler)
                 .get_x("/all", game_controller::all_handler)
+                .get_x("/no-strategy", game_controller::list_for_strategy_handler)
                 .get_x("/by-status/{status}", game_controller::by_status_handler)
                 .get_x("/{id}", game_controller::get_handler)
                 .post_x_with_middleware("/", game_controller::create_handler, ["can:games:create"])

@@ -14,7 +14,9 @@ use dirtybase_common::anyhow;
 use dirtybase_contract::db_contract::types::ArcUuid7;
 use serde::{Deserialize, Serialize};
 
-use crate::dirtybase_entry::model::{country::Country, tournament::Tournament};
+use crate::dirtybase_entry::model::{
+    country::Country, tip_strategy::TipStrategy, tournament::Tournament,
+};
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
@@ -185,13 +187,13 @@ pub struct Game {
     pub(crate) winner: Option<Country>,
     #[ts(type = "string")]
     pub(crate) winner_id: Option<ArcUuid7>,
-    #[ts(type = "Date | null")]
-    pub(crate) to_configure_on: Option<DateTimeField>,
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
+    pub(crate) date_and_time: Option<DateTimeField>, // This field will be
+    #[ts(type = "string | null")]
     pub(crate) created_at: CreatedAtField,
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) updated_at: UpdatedAtField,
-    #[ts(type = "Date | null")]
+    #[ts(type = "string | null")]
     pub(crate) deleted_at: DeletedAtField,
 }
 
@@ -324,12 +326,12 @@ impl Game {
         self
     }
 
-    pub fn to_configure_on(&self) -> Option<&DateTimeField> {
-        self.to_configure_on.as_ref()
+    pub fn date_and_time(&self) -> Option<&DateTimeField> {
+        self.date_and_time.as_ref()
     }
 
-    pub fn set_to_configure_on(&mut self, to_configure_on: DateTimeField) -> &mut Self {
-        self.to_configure_on = Some(to_configure_on);
+    pub fn set_date_and_time(&mut self, datetime: DateTimeField) -> &mut Self {
+        self.date_and_time = Some(datetime);
         self
     }
 
@@ -364,6 +366,22 @@ impl GameRepo {
         self.with_country_a().with_country_b();
         self.builder.desc(Self::col_count());
         self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.get().await
+    }
+
+    pub async fn all_unassiged_by_tournament(
+        &mut self,
+        tournament_id: ArcUuid7,
+    ) -> Result<Vec<Game>, anyhow::Error> {
+        self.with_country_a().with_country_b();
+        self.builder.desc(Self::col_count());
+        self.builder.is_eq(Self::col_tournament_id(), tournament_id);
+        self.builder.left_join_table::<TipStrategy, Game>(
+            TipStrategy::col_name_for_game_id(),
+            Game::col_name_for_id(),
+        );
+        // self.builder.is_null(TipStrategy::col_name_for_group_id());
+
         self.get().await
     }
 

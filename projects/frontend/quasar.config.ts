@@ -102,6 +102,9 @@ export default defineConfig((ctx) => {
         '/api': {
           target: process.env.BACKEND_SERVER || 'http://rust:8080',
         },
+        '/_open': {
+          target: process.env.BACKEND_SERVER || 'http://rust:8080',
+        },
         '/static': {
           target: process.env.BACKEND_SERVER || 'http://rust:8080',
         },

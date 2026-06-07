@@ -1,0 +1,1 @@
+import{t as e}from"./BaseClient-C0o0STmh.js";var t=class extends e{constructor(e){super(e,`/api/v1/groups`)}async all(e){return await this.getMany(``,e)}},n=e=>new t(e);export{n as t};

@@ -155,7 +155,7 @@
     "alpha3": "CAN"
   },
   {
-    "name": "Cabo Verde",
+    "name": "Cabo Verde (Cape Verde)",
     "alpha2": "CV",
     "alpha3": "CPV"
   },
@@ -213,6 +213,11 @@
     "name": "Cyprus",
     "alpha2": "CY",
     "alpha3": "CYP"
+  },
+  {
+    "name": "Curaçao",
+    "alpha2": "CW",
+    "alpha3": "CUW"
   },
   {
     "name": "Czechia",

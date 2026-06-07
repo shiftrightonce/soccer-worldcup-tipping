@@ -14,7 +14,7 @@ export type GamePayload = {
   countryAGoals: number | null;
   countryBGoals: number | null;
   winnerId: string | null;
-  toConfigureOn: string | null;
+  dateAndTime: string | null;
   countryAPenaltyGoals: number | null;
   countryBPenaltyGoals: number | null;
 };
