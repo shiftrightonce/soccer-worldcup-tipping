@@ -1,0 +1,47 @@
+services:
+  nginxproxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - ${PROXY_UI_ADDRESS:-81}:81
+      - '443:443'
+    volumes:
+      - ./storage/nginx:/data
+      - ./storage/letsencrypt:/etc/letsencrypt
+    networks:
+      - webnetwork
+  db:
+    build:
+      context: ./services/db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-dbpassword}
+      - MYSQL_USER=${MYSQL_USER:-dbuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-dbuser}
+    networks:
+      - webnetwork
+    volumes:
+      - ./services/db/data:/var/lib/mysql
+    hostname: mariadb
+  adminer:
+    image: adminer:standalone
+    networks:
+      - webnetwork
+    hostname: adminer
+  worldcup:
+    image: 'jibaomansaray/worldcup-tipping:latest'
+    volumes:
+      - ./storage/app_content:/app/public
+      - ./storage/.env:/app/.env
+    hostname: worldcup
+    restart: unless-stopped
+    ports:
+      - ${APP_PORT}:127.0.0.1:8080
+    networks:
+      - webnetwork
+
+networks:
+  webnetwork:
+    name: ${NETWORK_NAME:-dev_network}
+    driver: bridge
