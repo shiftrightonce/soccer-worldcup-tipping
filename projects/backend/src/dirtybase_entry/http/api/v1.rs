@@ -124,6 +124,7 @@ pub fn register_routes(manager: &mut RouterManager) {
             router
                 .get_x_with_middleware("/", user_controller::list_handler, ["can:users:view-all"])
                 .get_x("/me", user_controller::get_me_handler)
+                .put_x("/update/me", user_controller::update_credential_handler)
                 .get_x("/player/{id}", user_controller::view_player_handler)
                 .get_x_with_middleware(
                     "/{user_id}",

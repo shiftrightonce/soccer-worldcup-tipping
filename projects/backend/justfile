@@ -1,0 +1,13 @@
+docker-build: build
+  docker build -t jibaomansaray/worldcup-tipping .
+
+docker-deploy: docker-build
+  docker push jibaomansaray/worldcup-tipping
+
+
+build:
+  cargo build -r
+  
+
+clean:
+  cargo clean

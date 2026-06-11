@@ -25,6 +25,10 @@ pub(crate) async fn setup() {
             return event;
         };
 
+        if !tip_config.email_enabled {
+            return event;
+        }
+
         if let Ok(email_sender) = ctx.get::<EmailSender>().await {
             // TODO: Some of these values should come from the configuration
             let content =

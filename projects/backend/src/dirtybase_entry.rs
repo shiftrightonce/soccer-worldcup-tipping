@@ -133,6 +133,15 @@ impl dirtybase_contract::ExtensionSetup for Extension {
         http::register_routes(manager);
     }
 
+    async fn on_web_response(
+        &self,
+        resp: Response,
+        cookie_jar: CookieJar,
+        _context: Context,
+    ) -> (Response, CookieJar) {
+        (resp, cookie_jar.remove("cf_clearance"))
+    }
+
     async fn on_cli_command(
         &self,
         cmd: &str,

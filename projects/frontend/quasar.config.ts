@@ -105,7 +105,7 @@ export default defineConfig((ctx) => {
         '/_open': {
           target: process.env.BACKEND_SERVER || 'http://rust:8080',
         },
-        '/static': {
+        '/public': {
           target: process.env.BACKEND_SERVER || 'http://rust:8080',
         },
       },
@@ -120,7 +120,7 @@ export default defineConfig((ctx) => {
           color: 'positive',
         },
         loadingBar: {
-          color: 'primary',
+          color: 'positive',
           size: '5px',
         },
       },

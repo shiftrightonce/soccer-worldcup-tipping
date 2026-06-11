@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TipConfig {
     pub(crate) base_url: Arc<String>,
+    pub(crate) email_enabled: bool,
     pub(crate) user_validation_url: Arc<String>,
 }
 

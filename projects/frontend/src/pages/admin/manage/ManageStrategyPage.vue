@@ -86,7 +86,7 @@ import GameClient from 'src/api/v1/clients/GameClient'
 import DateTimeComponent from 'src/components/DateTimeComponent.vue';
 import { strategyTypeKeyValue, strategyTypeList } from 'src/general/lists';
 import { useUserStore } from 'src/stores/user-store';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import type { Game } from 'src/api/Game';
 import GroupClient from 'src/api/v1/clients/GroupClient';
 import type { Group } from 'src/api/Group';
@@ -219,17 +219,9 @@ onMounted(async () => {
     }
 
   } catch (e) {
+    // FIXME: Handle error properly
     console.log(e)
   }
 })
 
-watch(model.data, (_, newV) => {
-  console.log({
-    ...newV
-  })
-})
-
-console.log('here....', {
-  ...props
-})
 </script>

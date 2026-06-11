@@ -63,8 +63,17 @@ pub async fn all_open_handler(
 
 pub async fn all_closed_handler(
     CtxExt(mut tip_srategy_repo): CtxExt<TipStrategyRepo>,
+    CtxExt(mut user_repo): CtxExt<UserRepo>,
+    CtxExt(actor): CtxExt<Actor>,
     Path(tournament_id): Path<ArcUuid7>,
+    Query(params): Query<Parameters>,
 ) -> impl IntoResponse {
+    if let Ok(Some(user)) = user_repo
+        .by_actor_id(actor.id().cloned().unwrap_or_default())
+        .await
+    {
+        params.apply(&mut tip_srategy_repo, user);
+    }
     ApiResponse::from(
         tip_srategy_repo
             .all_closed_by_tournament_id(tournament_id)

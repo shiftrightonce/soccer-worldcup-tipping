@@ -1,1 +1,0 @@
-import{N as e,V as t,d as n,u as r}from"./vue.runtime.esm-bundler-ByfJUgrO.js";import{yt as i}from"./index-D_GQrqkE.js";import{t as a}from"./QPage-DYzjMQTn.js";var o={};function s(i,o){return e(),n(a,{class:`row items-center justify-evenly`},{default:t(()=>[...o[0]||=[r(`h1`,null,`Admin Notification Page`,-1)]]),_:1})}var c=i(o,[[`render`,s]]);export{c as default};

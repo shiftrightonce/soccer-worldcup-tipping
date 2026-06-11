@@ -29,7 +29,7 @@
       <!-- buttons example -->
       <q-card-actions align="right">
         <q-btn color="secondary" flat label="Close" @click="onDialogCancel" />
-        <q-btn color="primary" flat label="Save" @click="saveTip" />
+        <q-btn color="primary" flat label="Save" @click="saveTip" v-if="!isClosed && !props.forResult" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -115,7 +115,6 @@ const saveTip = async () => {
   }
   const response = await tipClient.saveMyTip(tip.value, tip.value.id || '')
   if (response.data) {
-    console.log('saved tip response', response.data)
     tip.value = response.data
     onDialogOK(response.data)
   }
@@ -124,7 +123,7 @@ const saveTip = async () => {
 onMounted(async () => {
   q.loading.show()
   // 1. Fetch the Tipstrategy by ID
-  const response = await tipStrategyClient.byId(props.tipStrategyId, (props.forResult) ? new URLSearchParams({ with: 'my_tips' }) : undefined)
+  const response = await tipStrategyClient.byId(props.tipStrategyId, (!props.forResult) ? new URLSearchParams({ with: 'my_tips' }) : undefined)
   if (response.data) {
     response.data.strategyTypes = response.data.strategyTypes.sort((a, b) => a.toString().localeCompare(b.toString()))
     if (!props.forResult && response.data.tips && response.data.tips.length > 0) {

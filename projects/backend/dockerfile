@@ -1,0 +1,10 @@
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y libssl-dev
+
+WORKDIR /app
+COPY ./target/release/backend /app
+COPY ./spa /app/spa
+COPY ./.env.defaults /app
+
+CMD [ "/app/backend", "serve" ]

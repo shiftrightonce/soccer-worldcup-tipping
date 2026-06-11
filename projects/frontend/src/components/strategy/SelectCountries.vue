@@ -68,8 +68,9 @@
 import type { Country } from 'src/api/Country';
 import type { Strategy } from 'src/api/Strategy';
 import type { TipStrategy } from 'src/api/TipStrategy';
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import FlagComponent from '../FlagComponent.vue';
+
 
 const props = defineProps<{ tipStrategy: TipStrategy, max: number, countries: Country[], label: string, isClosed: boolean, forResult?: boolean }>()
 const [model, _] = defineModel<Strategy>({ required: true })
@@ -77,22 +78,23 @@ const selectedValues = reactive<Record<string, boolean>>(Object.fromEntries(prop
 const isDisabled = reactive<Record<string, boolean>>(Object.fromEntries(props.countries.map((entry) => [entry.id, false])))
 
 const hasCompleted = (props.isClosed || props.tipStrategy?.completed) && !props.forResult
+const selectedCountries = reactive<Country[]>([])
 
-let selectedCountries: Country[] = []
-
-if (Array.isArray(model.value.entry)) {
-  selectedCountries = model.value.entry.map((id) => props.countries.find((c) => c.id === id)) as Country[]
-  selectedCountries.forEach((entry) => {
-    if (entry) {
+onMounted(() => {
+  if (Array.isArray(model.value.entry)) {
+    (model.value.entry.map((id) => props.countries.find((c) => c.id === id)) as Country[]).forEach((entry) => {
+      selectedCountries.push(entry)
+    });
+    selectedCountries.forEach((entry) => {
       selectedValues[entry.id] = true
-    }
-  })
-}
+    })
+  }
 
 
-if ((!model.value.entry || !Array.isArray(model.value.entry)) && props.max > 1) {
-  model.value.entry = []
-}
+  if ((!model.value.entry || !Array.isArray(model.value.entry)) && props.max > 1) {
+    model.value.entry = []
+  }
+})
 
 const onSelectToggle = () => {
   model.value.entry = [];
@@ -106,7 +108,7 @@ const onSelectToggle = () => {
           }
         }
       } else {
-        for (const key in selectedValues) {
+        for (const key in isDisabled) {
           isDisabled[key] = false
         }
       }

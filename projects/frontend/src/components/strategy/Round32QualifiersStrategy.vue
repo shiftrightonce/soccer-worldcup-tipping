@@ -1,6 +1,6 @@
 <template>
-  <SelectCountries :tipStrategy="props.tipStrategy" :max="32" :countries="countries" :is-closed="props.isClosed"
-    label="Select 32 countries" v-model="model"></SelectCountries>
+  <SelectCountries v-if="isReady" :tipStrategy="props.tipStrategy" :max="32" :countries="countries"
+    :is-closed="props.isClosed" label="Select 32 countries" v-model="model"></SelectCountries>
 </template>
 
 <script setup lang="ts">
@@ -18,6 +18,7 @@ const countries = ref<Country[]>([])
 const [model, _] = defineModel<Strategy>({ required: true })
 const userStore = useUserStore()
 const countryGroupClient = CountryGroupClient(userStore.authHeader(), props.tipStrategy.tournamentId)
+const isReady = ref(false)
 
 onMounted(async () => {
   let params = new URLSearchParams({ filter: 'still-in', with: 'country' })
@@ -42,5 +43,6 @@ onMounted(async () => {
       model.value.entry = resultEntry.entry
     }
   }
+  isReady.value = true
 })
 </script>

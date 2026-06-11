@@ -84,12 +84,12 @@ export const useMenuStore = defineStore('menu', {
         icon: 'notifications_paused',
         color: 'primary',
       },
-      {
-        label: 'Group Chat',
-        to: { name: 'group-chat' },
-        icon: 'message',
-        color: 'primary',
-      },
+      // {
+      //   label: 'Group Chat',
+      //   to: { name: 'group-chat' },
+      //   icon: 'message',
+      //   color: 'primary',
+      // },
       {
         label: 'Learn',
         to: { name: 'learn' },

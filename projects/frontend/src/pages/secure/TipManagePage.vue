@@ -49,7 +49,9 @@ import { useQuasar } from 'quasar';
 import { useGameStore } from 'src/stores/game-store';
 import TipClient, { makeNewPayload } from 'src/api/v1/clients/TipClient';
 import { useRouter } from 'vue-router';
+import { useLayoutStore } from 'src/stores/layout-store';
 
+const layoutStore = useLayoutStore()
 const props = defineProps<{ tournamentId: string, tipStrategyId: string, id?: string }>()
 const userStore = useUserStore()
 const tipStrategyClient = TipStrategyClient(userStore.authHeader(), props.tournamentId)
@@ -59,6 +61,8 @@ const isClosed = ref(false)
 const q = useQuasar()
 const gameStore = useGameStore()
 const router = useRouter()
+
+layoutStore.setTitle('Manage Tip');
 
 // test data for now
 const tipStrategy = ref<TipStrategy | null>(null)
@@ -80,9 +84,9 @@ const saveTip = async () => {
   }
   const response = await tipClient.saveMyTip(tip.value, tip.value.id || '')
   if (response.data) {
-    console.log('saved tip response', response.data)
     tip.value = response.data
   }
+  router.go(-1)
 }
 
 onMounted(async () => {

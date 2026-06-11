@@ -21,7 +21,7 @@ export const useUserStore = defineStore('userStore', {
       }
       return state.loginData.roles.findIndex((entry) => entry.name == 'administrator') > -1
     },
-    avatar: (state) => `/assets/avartar/${state.loginData?.user.avatar || 'placeholder.png'}`,
+    avatar: (state) => `/public/avatar/${state.loginData?.user.avatar || 'placeholder.png'}`,
     token: (state) => state.activeToken,
     user: (state) => state.loginData?.user
   },

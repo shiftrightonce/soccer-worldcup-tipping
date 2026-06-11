@@ -128,7 +128,7 @@ pub async fn login_handler(
             return ApiResponse::success(SignInReponse {
                 user,
                 token,
-                roles: actor.roles().clone().into(),
+                roles: actor.roles().into(),
             });
         }
     }
@@ -186,13 +186,13 @@ pub async fn verify_email_handler(
     ApiResponse::forbidden().with_message("validation failed")
 }
 
-pub fn reset_password_request_handler(
-    CtxExt(mut user_repo): CtxExt<UserRepo>,
-    CtxExt(storage): CtxExt<PermStorageProvider>,
-    Json(payload): Json<ResetPasswordRequestPayload>,
-) -> impl IntoResponse {
-    ApiResponse::success("Password reset requested")
-}
+// pub fn reset_password_request_handler(
+//     CtxExt(mut user_repo): CtxExt<UserRepo>,
+//     CtxExt(storage): CtxExt<PermStorageProvider>,
+//     Json(payload): Json<ResetPasswordRequestPayload>,
+// ) -> impl IntoResponse {
+//     ApiResponse::success("Password reset requested")
+// }
 
 #[derive(Debug, Deserialize, Validate, ts_rs::TS)]
 #[ts(export_to = "v1/")]

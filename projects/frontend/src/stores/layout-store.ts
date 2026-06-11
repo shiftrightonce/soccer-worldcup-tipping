@@ -38,9 +38,7 @@ export const useLayoutStore = defineStore('layoutStore', {
       }
     },
     toggleRighDrawer () {
-      if (this.isRightDrawerEnabled) {
-        this.rightDrawer = !this.rightDrawer;
-      }
+      this.rightDrawer = !this.rightDrawer;
     },
     leftDrawerComputed () {
       return computed(() => this.leftDrawer);

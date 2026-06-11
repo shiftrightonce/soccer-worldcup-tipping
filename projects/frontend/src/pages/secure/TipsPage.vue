@@ -15,16 +15,22 @@ import type { TipStrategy } from 'src/api/TipStrategy';
 import TipStrategyClient from 'src/api/v1/clients/TipStrategyClient';
 import TournamentClient from 'src/api/v1/clients/TournamentClient';
 import TipCardComponent from 'src/components/tip/TipCardComponent.vue';
+import { useLayoutStore } from 'src/stores/layout-store';
 import { useUserStore } from 'src/stores/user-store';
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
-const props = defineProps<{ tournamentId: string }>()
+
+const layoutStore = useLayoutStore();
+const route = useRoute();
+const tournamentId = (route.params.tournamentId || '') as string
 const userStore = useUserStore()
 const tournamentClient = TournamentClient(userStore.authHeader())
 const openTipStrategies = ref<Array<TipStrategy>>([])
 const tips = ref<Record<string, Tip>>({})
 const router = useRouter()
+
+layoutStore.setTitle('Active')
 
 const fetchActiveTips = async (tournamentId: string) => {
   const client = TipStrategyClient(userStore.authHeader(), tournamentId)
@@ -40,8 +46,8 @@ const fetchActiveTips = async (tournamentId: string) => {
 }
 
 onMounted(async () => {
-  if (props.tournamentId) {
-    await fetchActiveTips(props.tournamentId)
+  if (tournamentId) {
+    await fetchActiveTips(tournamentId)
   } else {
     const params = new URLSearchParams({ filter: 'status=active' });
     const response = await tournamentClient.paginate(params)

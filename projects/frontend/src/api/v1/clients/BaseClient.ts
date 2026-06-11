@@ -1,3 +1,5 @@
+import { LoadingBar } from "quasar";
+
 export type ApiResponse<T> = {
   data: T | null;
   meta: {
@@ -37,13 +39,16 @@ export class BaseClient {
     endPoint: string,
     params: URLSearchParams | null = null,
   ): Promise<ApiResponse<T[]>> {
+    LoadingBar.start()
     return await fetch(this.buildUrl(endPoint, params), {
       headers: this.authHeader,
     })
       .then((response) => {
+        LoadingBar.stop()
         return response.json();
       })
       .catch((e) => {
+        LoadingBar.stop()
         throw e;
       });
   }
@@ -60,22 +65,25 @@ export class BaseClient {
   }
 
   protected async post<T> (endPoint: string, payload: string, params: URLSearchParams | null = null): Promise<ApiResponse<T>> {
+    LoadingBar.start()
     const response = await fetch(this.buildUrl(endPoint, params), {
       method: 'POST',
       headers: this.authHeader,
       body: payload,
     });
 
+    LoadingBar.stop()
     return await response.json();
   }
 
   protected async put<T> (endPoint: string, payload: string, params: URLSearchParams | null = null): Promise<ApiResponse<T>> {
+    LoadingBar.start()
     const response = await fetch(this.buildUrl(endPoint, params), {
       method: 'PUT',
       headers: this.authHeader,
       body: payload,
     });
-
+    LoadingBar.stop()
     return await response.json();
   }
 

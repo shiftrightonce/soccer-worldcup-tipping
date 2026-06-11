@@ -91,11 +91,14 @@ impl TipRepo {
             "?"
         };
 
-        let sql = format!("SELECT u.id AS user_id, a.username AS username, 
-  COALESCE(SUM(tips.points), 0) AS total_points
+        let sql = format!("SELECT u.id AS user_id, u.avatar AS avatar, a.username AS username, 
+  SUM(tips.points) AS total_points,
+  COUNT(tips.id) AS total_tips
   FROM users u 
   LEFT JOIN auth_actors a ON a.id = u.auth_actor_id
-LEFT JOIN tips ON tips.user_id = u.id WHERE tips.tournament_id = {} GROUP BY u.id ORDER BY total_points DESC LIMIT 25", placeholder);
+  LEFT JOIN tips ON tips.user_id = u.id
+  LEFT JOIN tip_strategies st ON st.id = tips.tip_strategy_id
+  WHERE tips.tournament_id = {} AND st.completed = 1  GROUP BY u.id ORDER BY total_points DESC LIMIT 25", placeholder);
 
         let result = self.manager.raw_select(&sql, vec![tournament_id]).await?;
         Ok(result
@@ -116,8 +119,9 @@ LEFT JOIN tips ON tips.user_id = u.id WHERE tips.tournament_id = {} GROUP BY u.i
             ("?", "?")
         };
 
-        let sql = format!("SELECT u.id AS user_id, a.username AS username, 
-  COALESCE(SUM(tips.points), 0) AS total_points
+        let sql = format!("SELECT u.id AS user_id, u.avatar AS avatar, a.username AS username, 
+  SUM(tips.points) AS total_points,
+  COUNT(tips.id) AS total_tips
   FROM users u 
   LEFT JOIN auth_actors a ON a.id = u.auth_actor_id
 LEFT JOIN tips ON tips.user_id = u.id WHERE tips.tournament_id = {} AND tips.user_id = {} GROUP BY u.id ORDER BY total_points DESC", placeholders.0, placeholders.1);
@@ -233,9 +237,14 @@ LEFT JOIN tips ON tips.user_id = u.id WHERE tips.tournament_id = {} AND tips.use
 pub struct Point {
     #[ts(type = "string")]
     user_id: ArcUuid7,
+    avatar: StringField,
     username: StringField,
     #[ts(type = "number")]
     total_points: i64,
+    #[ts(type = "number")]
+    total_tips: i64,
+    #[ts(type = "number")]
+    position: i64, // Will be calcualted on the client side for now
 }
 
 impl FromColumnAndValue for Point {
@@ -246,6 +255,7 @@ impl FromColumnAndValue for Point {
         Self: Sized,
     {
         Ok(Self {
+            position: 0, // Will be calculated on the client side
             user_id: column_and_value
                 .get("user_id")
                 .cloned()
@@ -258,6 +268,16 @@ impl FromColumnAndValue for Point {
                 .into(),
             total_points: column_and_value
                 .get("total_points")
+                .cloned()
+                .unwrap_or_default()
+                .into(),
+            total_tips: column_and_value
+                .get("total_tips")
+                .cloned()
+                .unwrap_or_default()
+                .into(),
+            avatar: column_and_value
+                .get("avatar")
                 .cloned()
                 .unwrap_or_default()
                 .into(),

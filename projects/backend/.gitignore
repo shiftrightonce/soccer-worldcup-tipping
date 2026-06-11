@@ -6,3 +6,5 @@
 /public
 !/public/.gitkeep
 !/public/avatar/.gitkeep
+/spa
+!spa/.gitkeep

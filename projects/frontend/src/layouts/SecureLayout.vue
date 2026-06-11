@@ -1,13 +1,6 @@
 <template>
   <q-layout view="hHr lpr fFr">
-    <q-drawer
-      show-if-above
-      v-model="layoutStore.rightDrawer"
-      side="right"
-      overlay
-      behavior="mobile"
-      bordered
-    >
+    <q-drawer show-if-above v-model="layoutStore.rightDrawer" side="right" overlay behavior="mobile" bordered>
       <MainMenu></MainMenu>
     </q-drawer>
 
@@ -21,43 +14,18 @@
                 <q-toolbar-title class="text-positive text-bold"> </q-toolbar-title>
                 <div class="gt-sm">
                   <div v-if="!userStore.isLogin">
-                    <q-btn
-                      flat
-                      v-for="item in menuStore.public"
-                      :to="item.to"
-                      :icon="item.icon"
-                      :key="item.label"
-                    >
-                      &nbsp;{{ item.label }}</q-btn
-                    >
-                    <q-btn
-                      v-if="menuStore.shareIsSupported()"
-                      flat
-                      @click="shareApp"
-                      label="Share"
-                      icon="share"
-                    >
+                    <q-btn flat v-for="item in menuStore.public" :to="item.to" :icon="item.icon" :key="item.label">
+                      &nbsp;{{ item.label }}</q-btn>
+                    <q-btn v-if="menuStore.shareIsSupported()" flat @click="shareApp" label="Share" icon="share">
                     </q-btn>
                   </div>
                   <div v-else>
-                    <q-btn
-                      flat
-                      round
-                      dense
-                      icon="menu"
-                      class="gt-sm"
-                      @click="() => (layoutStore.rightDrawer = !layoutStore.rightDrawer)"
-                    />
+                    <q-btn flat round dense icon="menu" class="gt-sm"
+                      @click="() => (layoutStore.rightDrawer = !layoutStore.rightDrawer)" />
                   </div>
                 </div>
-                <q-btn
-                  flat
-                  round
-                  dense
-                  icon="menu"
-                  class="lt-md"
-                  @click="() => (layoutStore.rightDrawer = !layoutStore.rightDrawer)"
-                />
+                <q-btn flat round dense icon="menu" class="lt-md"
+                  @click="() => (layoutStore.rightDrawer = !layoutStore.rightDrawer)" />
               </q-toolbar>
             </div>
           </div>

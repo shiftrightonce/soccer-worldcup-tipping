@@ -12,26 +12,34 @@
             <div class="text-h4 text-bold text-deep-orange-8">Scoring System</div>
             <ul>
               <li>
-                1 point for predicting the winner of a match
+                <b>Match Winner:</b> <br />
+                &nbsp; &nbsp; 5 points
               </li>
               <li>
-                1 point for predicting a draw
+                <b>Group Ranking:</b> <br />
+                &nbsp; &nbsp; 5 points for each
               </li>
               <li>
-                5 points for prediction that a match will go into penalty
+                <b>Goals:</b> <br />
+                &nbsp; &nbsp; 10 points if both teams predication are right<br />
+                &nbsp; &nbsp; 5 points if either predication is right
               </li>
               <li>
-                If you predict the exact goal for each team, you will get a point for each goal. <br />
-                <span style="color:#e64a19">Example</span>: <b>You predicted Australia to score 5 goals 😜 and France to
-                  score 1 😒. You will get a total of
-                  six points.</b>
+                <b>Cup Winner:</b> <br />
+                &nbsp; &nbsp; 10 points
               </li>
               <li>
-                2 points for predicting the exact score of the match. <br />
-                <span style="color:#e64a19">Example</span>: <b>You predictd the score 2 - 2</b>
+                <b>Game to Penalty:</b> <br />
+                &nbsp; &nbsp; 5 points
               </li>
               <li>
-                If you predicted the exact score in a penalty shootout, you will also get 1 point for each goal.
+                <b>First Red or Yellow card:</b> <br />
+                &nbsp; &nbsp; 5 points
+              </li>
+              <li>
+                <b>Penalty Goals:</b> <br />
+                &nbsp; &nbsp; 10 points if both teams predication are right<br />
+                &nbsp; &nbsp; 5 points if either predication is right
               </li>
             </ul>
           </div>

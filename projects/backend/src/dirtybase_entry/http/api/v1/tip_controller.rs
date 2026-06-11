@@ -2,10 +2,7 @@ use std::collections::HashSet;
 
 use dirtybase_app::{
     axum::Json,
-    db::{
-        base::paginate_builder::PaginateBuilder,
-        types::{ArcUuid7, ToColumnAndValue},
-    },
+    db::{base::paginate_builder::PaginateBuilder, types::ArcUuid7},
 };
 use dirtybase_contract::{
     auth_contract::Actor,
@@ -115,11 +112,9 @@ pub async fn create_handler(
 
         tip.user_id = user.id.clone().unwrap();
         tip.tournament_id = tournament_id;
-        tracing::warn!("{:#?}", tip.to_column_value());
         ApiResponse::from(if editing {
             tip_repo.update(tip).await
         } else {
-            tracing::warn!("inserting new user tip");
             tip_repo.insert(tip).await
         })
     } else {

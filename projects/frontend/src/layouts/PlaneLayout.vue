@@ -10,8 +10,7 @@
           {{ layoutStore.title }}
         </q-toolbar-title>
 
-        <q-btn dense flat round icon="menu" @click="layoutStore.toggleRighDrawer"
-          v-if="layoutStore.isRightDrawerEnabled" />
+        <q-btn dense flat round icon="menu" @click="layoutStore.toggleRighDrawer" />
       </q-toolbar>
     </q-header>
 

@@ -9,7 +9,7 @@
         <div class="col-auto">
           <q-badge v-if="props.forResult" rounded :color="props.tipStrategy.result ? 'negative' : 'grey'">
           </q-badge>
-          <q-badge v-else rounded :color="tip?.id ? 'primary' : 'grey'">
+          <q-badge v-else rounded :color="tip?.id ? 'green-6' : 'orange'">
           </q-badge>
         </div>
       </div>
@@ -21,16 +21,18 @@
       <FlagComponent v-if="game.countryB" :country-code="game.countryB?.alpha2"
         :width="$q.platform.is.mobile ? '8em' : '8.33em'" height="6em" />
     </q-card-section>
-    <q-card-section v-else>
-      <FlagComponent :country-code="''" width="11.33em" height="6em" />
+    <q-card-section v-else class="flex flex-center items-center">
+      <q-img src="/img/sort.svg" height="6em" width="6em" />
     </q-card-section>
     <q-separator />
-    <q-card-section v-show="isClosed && !props.forResult">
-      <div class="text-body2 text-muted-foreground">Tip ends at {{ endsAt.toLocaleString() }}</div>
+    <q-card-section v-show="!props.forResult">
+      <div class="text-body2 text-muted-foreground" v-if="isClosed">Ended at {{ endsAt.toLocaleString() }}</div>
+      <div class="text-body2 text-muted-foreground" v-else>Ends at {{ endsAt.toLocaleString() }}</div>
     </q-card-section>
     <q-separator />
     <q-card-actions align="right">
-      <q-btn flat color="warning" v-show="isClosed && !props.forResult"> pt: {{ props.tip?.points || 0 }} </q-btn>
+      <div class="text-h6" v-show="isClosed && !props.forResult">Points: <span class="text-red-4">{{ props.tip?.points
+        || 0 }}</span></div>
       <q-space />
       <q-btn flat round color="primary" :icon="icon" @click="onManageBtnClick"></q-btn>
     </q-card-actions>
@@ -76,6 +78,9 @@ const onManageBtnClick = async () => {
         forResult: props.forResult
       }
     }).onOk((tip: Tip) => {
+      if (tip.id) {
+        icon.value = 'check';
+      }
       emits('tipSaved', tip)
     })
   } else {
@@ -89,15 +94,6 @@ const onManageBtnClick = async () => {
       }
     })
   }
-
-  // await router.push({
-  //   name: 'manage-tip',
-  //   params: {
-  //     tournamentId: props.tipStrategy.tournamentId || props.tip?.tipStrategy?.tournamentId || '',
-  //     tipStrategyId: props.tipStrategy.id || props.tip?.tipStrategy?.id || '',
-  //     id: props.tip?.id
-  //   }
-  // })
 }
 
 if (props.tipStrategy?.completed || props.tip?.tipStrategy?.completed) {

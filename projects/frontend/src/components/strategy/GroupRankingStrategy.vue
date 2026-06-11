@@ -48,7 +48,6 @@ const countryGroupClient = CountryGroupClient(userStore.authHeader(), props.tipS
 const el = useTemplateRef('el')
 const list = shallowRef<Country[]>([])
 
-
 watch(list, (newValues, _) => {
   model.value.entry = newValues.map((entry) => entry.id)
 })
