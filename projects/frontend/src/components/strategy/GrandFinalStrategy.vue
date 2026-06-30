@@ -1,6 +1,6 @@
 <template>
-  <SelectCountries :tipStrategy="props.tipStrategy" :max="2" :countries="countries" :is-closed="props.isClosed"
-    label="Countries to make it to the final" v-model="model"></SelectCountries>
+  <SelectCountries v-if="countries.length" :tipStrategy="props.tipStrategy" :max="2" :countries="countries"
+    :is-closed="props.isClosed" label="Countries to make it to the final" v-model="model"></SelectCountries>
 </template>
 
 <script setup lang="ts">

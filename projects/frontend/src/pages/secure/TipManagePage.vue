@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md q-mb-md">
+  <q-page class="q-pa-md q-mb-md" v-if="tipStrategy">
     <div class="row">
       <div class="col-10 col-xs-12">
         <div class="text-h6">{{ tipStrategy?.label }}</div>
@@ -13,8 +13,8 @@
             <q-card>
               <q-card-section class="q-pa-md">
                 <div class="text-body2 text-muted-foreground">{{ tipStrategy?.description }}</div>
-                <component :is="strategyComponents[type]" v-model="strategyData[type]" :tip-strategy="tipStrategy"
-                  :is-closed="isClosed">
+                <component :is="strategyComponents[type]" v-if="strategyData[type]" v-model="strategyData[type]"
+                  :tip-strategy="tipStrategy" :is-closed="isClosed" :for-result="forResult">
                 </component>
               </q-card-section>
             </q-card>
@@ -48,7 +48,7 @@ import { strategyFromType, validateStrategy } from 'src/general/strategy_helper'
 import { useQuasar } from 'quasar';
 import { useGameStore } from 'src/stores/game-store';
 import TipClient, { makeNewPayload } from 'src/api/v1/clients/TipClient';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useLayoutStore } from 'src/stores/layout-store';
 
 const layoutStore = useLayoutStore()
@@ -61,11 +61,14 @@ const isClosed = ref(false)
 const q = useQuasar()
 const gameStore = useGameStore()
 const router = useRouter()
+const route = useRoute()
+const forResult = ref(route.query.forResult !== undefined || false)
 
 layoutStore.setTitle('Manage Tip');
 
 // test data for now
 const tipStrategy = ref<TipStrategy | null>(null)
+
 
 // test data for now
 const tip = ref<TipPayload>(makeNewPayload(props.tournamentId, props.tipStrategyId))

@@ -1,5 +1,6 @@
 deploy:
   quasar build -m pwa
+  rm -r  ../backend/spa/*
   cp -r ./dist/pwa/* ../backend/spa
 
 dev:

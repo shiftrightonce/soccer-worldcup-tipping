@@ -116,7 +116,9 @@ impl TipStrategyRepo {
         self.builder
             .is_eq(Self::col_tournament_id(), tournament_id)
             .le_or_eq(Self::col_ends_at(), current_datetime())
-            .or_eq(Self::col_completed(), true);
+            .or_eq(Self::col_completed(), true)
+            .desc(TipStrategy::col_name_for_ends_at())
+            .desc(TipStrategy::col_name_for_created_at());
         self.get().await
     }
 
@@ -171,7 +173,7 @@ impl TipStrategyRepo {
 pub enum Strategy {
     /// The winner of the game. This is per game basis.
     #[serde(rename = "winner")]
-    Winner(#[ts(type = "string")] ArcUuid7),
+    Winner(#[ts(type = "string")] String),
     /// The goals scored by each team. This is per game basis.
     #[serde(rename = "goals")]
     Goals {
@@ -188,10 +190,10 @@ pub enum Strategy {
     GameToPenalty(bool),
     /// The first red card of the game. This is per game basis.
     #[serde(rename = "first_red_card")]
-    FirstRedCard(#[ts(type = "string")] ArcUuid7),
+    FirstRedCard(#[ts(type = "string")] String),
     /// The first yellow card of the game. This is per game basis.
     #[serde(rename = "first_yellow_card")]
-    FirstYellowCard(#[ts(type = "string")] ArcUuid7),
+    FirstYellowCard(#[ts(type = "string")] String),
     /// The penalty goals scored by each team. This is per game basis.
     #[serde(rename = "penalty_goals")]
     PenaltyGoals {

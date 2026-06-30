@@ -20,8 +20,8 @@ async fn main() {
     let stdout_layer = fmt::layer()
         .with_target(false)
         .with_writer(std::io::stdout) // write to console
-        .with_ansi(true);
-    // .with_filter(EnvFilter::new("error"));
+        .with_ansi(true)
+        .with_filter(EnvFilter::new("error"));
 
     tracing_subscriber::registry()
         .with(file_layer)

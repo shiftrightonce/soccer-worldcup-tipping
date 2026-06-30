@@ -143,6 +143,9 @@ const columns = [
 const onEditClick = async (id: string) => {
   await router.push({
     name: 'manage-strategy',
+    query: {
+      forResult: 'true'
+    },
     params: {
       tournamentId: props.tournamentId,
       id
@@ -154,7 +157,6 @@ onMounted(async () => {
   try {
     const response = await client.all()
     if (response.data) {
-      console.log('data....', response.data)
       result.value = response.data
     }
   } catch (e) {

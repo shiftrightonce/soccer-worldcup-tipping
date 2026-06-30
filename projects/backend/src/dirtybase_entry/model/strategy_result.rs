@@ -96,9 +96,13 @@ impl StrategyResultRepo {
             let mut strategy_result_repo = StrategyResultRepo::new(&manager);
             if let Ok(Some(tip_strategy_result)) = strategy_result_repo.by_id(id).await {
                 let mut tip_repo = TipRepo::new(&manager);
-                let mut tips_page = tip_repo
-                    .paginate_by_tip_strategy_id(tip_strategy_result.tip_strategy_id.clone(), None)
-                    .await;
+
+                // let mut tips_page = tip_repo
+                //     .paginate_by_tip_strategy_id(tip_strategy_result.tip_strategy_id.clone(), None)
+                //     .await;
+                // tracing::error!("{:#?}", tips_page.data_ref());
+
+                let tip_strategy_id = tip_strategy_result.tip_strategy_id.clone();
                 let strategies = HashMap::<StrategyType, Strategy>::from_iter(
                     tip_strategy_result
                         .strategy_results
@@ -106,37 +110,47 @@ impl StrategyResultRepo {
                         .map(|s| (s.strategy_type(), s.clone())),
                 );
 
-                loop {
-                    let tips = tips_page.data_ref().as_ref().unwrap_or(&vec![]).clone();
-                    if tips.is_empty() {
-                        break;
+                let tips = match tip_repo.all_by_tip_strategy_id(tip_strategy_id).await {
+                    Ok(list) => list,
+                    Err(e) => {
+                        tracing::error!("could not get tips: {}", e);
+                        Vec::new()
                     }
-                    tracing::debug!("Calculating points for {} tips", tips.len());
+                };
 
-                    for mut tip in tips {
-                        tip.points = 0;
-                        for a_strategy in tip.strategies.iter() {
-                            if let Some(b_strategy) = strategies.get(&a_strategy.strategy_type()) {
-                                let strategy_point = StrategyPoint {
-                                    strategy: a_strategy.strategy_type(),
-                                    points: a_strategy.compare_and_score(b_strategy),
-                                };
-                                tip.points += strategy_point.points;
-                                tip.tip_strategy_pts.insert(strategy_point);
-                            }
-                        }
-                        if let Err(e) = tip_repo.update(tip).await {
-                            tracing::error!("Failed to update tip with new points: {}", e);
-                        }
+                // loop {
+                //     let tips = tips_page.data_ref().as_ref().unwrap_or(&vec![]).clone();
+                //     if tips.is_empty() {
+                //         break;
+                //     }
+                // tracing::debug!("Calculating points for {} tips", tips.len());
+                // tracing::error!("paginator: {:#?}", tips_page.next_ref());
 
-                        tips_page = tip_repo
-                            .paginate_by_tip_strategy_id(
-                                tip_strategy_result.tip_strategy_id.clone(),
-                                tips_page.next_ref().cloned(),
-                            )
-                            .await;
+                for mut tip in tips {
+                    tracing::debug!("calculating: {:#?}, user: {}", &tip.id, &tip.user_id);
+                    tip.points = 0;
+                    for a_strategy in tip.strategies.iter() {
+                        if let Some(b_strategy) = strategies.get(&a_strategy.strategy_type()) {
+                            let strategy_point = StrategyPoint {
+                                strategy: a_strategy.strategy_type(),
+                                points: a_strategy.compare_and_score(b_strategy),
+                            };
+                            tip.points += strategy_point.points;
+                            tip.tip_strategy_pts.insert(strategy_point);
+                        }
+                    }
+                    if let Err(e) = tip_repo.update(tip).await {
+                        tracing::error!("Failed to update tip with new points: {}", e);
                     }
                 }
+
+                //     tips_page = tip_repo
+                //         .paginate_by_tip_strategy_id(
+                //             tip_strategy_result.tip_strategy_id.clone(),
+                //             tips_page.next_ref().cloned(),
+                //         )
+                //         .await;
+                // }
             }
         });
     }

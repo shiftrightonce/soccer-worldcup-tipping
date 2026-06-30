@@ -12,7 +12,7 @@ import CountryGroupClient from 'src/api/v1/clients/CountryGroupClient';
 import type { Country } from 'src/api/Country';
 import { onMounted, ref } from 'vue';
 
-const props = defineProps<{ tipStrategy: TipStrategy, isClosed: boolean }>()
+const props = defineProps<{ tipStrategy: TipStrategy, isClosed: boolean, forResult?: boolean }>()
 const countries = ref<Country[]>([])
 const [model, _] = defineModel<Strategy>({ required: true })
 const userStore = useUserStore()

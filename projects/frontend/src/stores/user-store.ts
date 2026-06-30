@@ -4,10 +4,12 @@ import type { SignInReponse } from 'src/api/v1/SignInReponse';
 
 const userKey = '_u';
 
+
 export const useUserStore = defineStore('userStore', {
   state: () => {
     const data: SignInReponse | null = LocalStorage.getItem(userKey);
     return {
+      _audio: new Audio('/sound/confetti.mp3'),
       activeToken: data ? data.token : '',
       vapid: data?.user.data.pushSubscription,
       loginData: data,
@@ -26,6 +28,9 @@ export const useUserStore = defineStore('userStore', {
     user: (state) => state.loginData?.user
   },
   actions: {
+    async playSound () {
+      await this._audio.play()
+    },
     authHeader () {
       return new Headers([
         ['Authorization', `Bearer ${this.activeToken}`],
@@ -68,6 +73,13 @@ export const useUserStore = defineStore('userStore', {
       // TODO: fully implement
       return true;
     },
+    async logout () {
+      return new Promise((resolve, _reject) => {
+        this.clearLoginData();
+        resolve(true)
+      })
+    },
+    setupSocket () { },
     requestPasswordReset (_email: string) {
       // TODO: fully implement
       return {

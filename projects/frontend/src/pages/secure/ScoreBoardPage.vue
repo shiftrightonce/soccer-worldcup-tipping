@@ -52,8 +52,8 @@ onMounted(async () => {
       const result = await tipClient.leaderBoard();
       if (result.data) {
         scores.value = result.data
-        scores.value.map((entry, index) => {
-          entry.position = index + 1;
+        scores.value.map((entry) => {
+          // entry.position = index + 1;
           if (entry.userId == user?.id) {
             currentUserPoint.value = entry;
           }

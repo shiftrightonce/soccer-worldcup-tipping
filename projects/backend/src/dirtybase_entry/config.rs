@@ -8,6 +8,7 @@ pub struct TipConfig {
     pub(crate) base_url: Arc<String>,
     pub(crate) email_enabled: bool,
     pub(crate) user_validation_url: Arc<String>,
+    pub(crate) version: Arc<String>,
 }
 
 #[async_trait::async_trait]

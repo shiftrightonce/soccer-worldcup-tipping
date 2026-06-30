@@ -93,12 +93,13 @@ impl TipRepo {
 
         let sql = format!("SELECT u.id AS user_id, u.avatar AS avatar, a.username AS username, 
   SUM(tips.points) AS total_points,
-  COUNT(tips.id) AS total_tips
+  COUNT(tips.id) AS total_tips,
+  RANK() OVER (ORDER BY total_points DESC) AS position 
   FROM users u 
   LEFT JOIN auth_actors a ON a.id = u.auth_actor_id
   LEFT JOIN tips ON tips.user_id = u.id
   LEFT JOIN tip_strategies st ON st.id = tips.tip_strategy_id
-  WHERE tips.tournament_id = {} AND st.completed = 1  GROUP BY u.id ORDER BY total_points DESC LIMIT 25", placeholder);
+  WHERE tips.tournament_id = {} AND st.completed = 1  GROUP BY u.id ORDER BY total_points DESC LIMIT 250", placeholder);
 
         let result = self.manager.raw_select(&sql, vec![tournament_id]).await?;
         Ok(result
@@ -121,7 +122,8 @@ impl TipRepo {
 
         let sql = format!("SELECT u.id AS user_id, u.avatar AS avatar, a.username AS username, 
   SUM(tips.points) AS total_points,
-  COUNT(tips.id) AS total_tips
+  COUNT(tips.id) AS total_tips,
+  RANK() OVER (ORDER BY total_points DESC) AS position 
   FROM users u 
   LEFT JOIN auth_actors a ON a.id = u.auth_actor_id
 LEFT JOIN tips ON tips.user_id = u.id WHERE tips.tournament_id = {} AND tips.user_id = {} GROUP BY u.id ORDER BY total_points DESC", placeholders.0, placeholders.1);
@@ -244,7 +246,7 @@ pub struct Point {
     #[ts(type = "number")]
     total_tips: i64,
     #[ts(type = "number")]
-    position: i64, // Will be calcualted on the client side for now
+    position: i64,
 }
 
 impl FromColumnAndValue for Point {
@@ -255,7 +257,11 @@ impl FromColumnAndValue for Point {
         Self: Sized,
     {
         Ok(Self {
-            position: 0, // Will be calculated on the client side
+            position: column_and_value
+                .get("position")
+                .cloned()
+                .unwrap_or_default()
+                .into(),
             user_id: column_and_value
                 .get("user_id")
                 .cloned()

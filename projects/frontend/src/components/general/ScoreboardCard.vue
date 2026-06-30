@@ -24,14 +24,6 @@
         <q-list dense>
           <q-item>
             <q-item-section>
-              <q-item-label>Username</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label>{{ point.username }}</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item>
-            <q-item-section>
               <q-item-label>Total Points</q-item-label>
             </q-item-section>
             <q-item-section side>

@@ -47,9 +47,9 @@ export const strategyFromType = (strategyType: StrategyType): Strategy => {
 export const validateStrategy = (strategy: Strategy): true | string => {
   switch (strategy.kind) {
     case 'winner':
-      if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
-        return 'Winner entry is required';
-      }
+      // if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
+      //   return 'Winner entry is required';
+      // }
       return true;
     case 'cup_winner':
       if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
@@ -57,12 +57,12 @@ export const validateStrategy = (strategy: Strategy): true | string => {
       }
       return true;
     case 'first_red_card':
-      if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
+      if (typeof strategy.entry !== 'string') {
         return 'First red card entry is required';
       }
       return true;
     case 'first_yellow_card':
-      if (typeof strategy.entry !== 'string' || strategy.entry.trim() === '') {
+      if (typeof strategy.entry !== 'string') {
         return 'First yellow card entry is required';
       }
       return true;

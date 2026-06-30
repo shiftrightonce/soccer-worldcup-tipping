@@ -3,6 +3,7 @@
 
 import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
+import type { GenerateSWOptions } from 'workbox-build';
 
 export default defineConfig((ctx) => {
   return {
@@ -188,6 +189,20 @@ export default defineConfig((ctx) => {
       // extendManifestJson (json) {},
       useCredentialsForManifestTag: true,
       injectPwaMetaTags: true,
+      extendPWAGenerateSWOptions (cfg: GenerateSWOptions) {
+        Object.assign(cfg, {
+          cleanupOutdatedCaches: true,
+          skipWaiting: true,
+          clientsClaim: true,
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/cdn/,
+              handler: 'StaleWhileRevalidate'
+            }
+          ]
+        })
+      }
+
       // extendPWACustomSWConf (esbuildConf) {},
       // extendGenerateSWOptions (cfg) {},
       // extendInjectManifestOptions (cfg) {}

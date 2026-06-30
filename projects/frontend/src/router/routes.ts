@@ -26,10 +26,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/secure/PastTipsPage.vue'),
         name: 'past-tips',
       },
-      { path: 'chat', component: () => import('pages/secure/ChatPage.vue'), name: 'chat' },
       { path: 'account', component: () => import('pages/secure/AccountPage.vue'), name: 'account' },
     ],
   },
+  // {
+  //   path: '/live/chat',
+  //   component: () => import('layouts/ChatGroupLayout.vue'),
+  //   children: [
+  //     { path: '', component: () => import('pages/secure/GroupChatPage.vue'), name: 'chat' },
+  //   ]
+  // },
   {
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
@@ -115,7 +121,7 @@ const routes: RouteRecordRaw[] = [
             name: 'strategies-dashboard'
           },
           {
-            path: 'strategies/manage/:id?',
+            path: 'strategies/manage/:id',
             component: () => import('pages/admin/manage/ManageStrategyPage.vue'),
             props: true,
             name: 'manage-strategy'

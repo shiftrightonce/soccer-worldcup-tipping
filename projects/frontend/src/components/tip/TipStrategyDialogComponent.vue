@@ -29,7 +29,7 @@
       <!-- buttons example -->
       <q-card-actions align="right">
         <q-btn color="secondary" flat label="Close" @click="onDialogCancel" />
-        <q-btn color="primary" flat label="Save" @click="saveTip" v-if="!isClosed && !props.forResult" />
+        <q-btn color="primary" flat label="Save" @click="saveTip" v-if="!isClosed || props.forResult" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -49,6 +49,7 @@ import type { Strategy } from 'src/api/Strategy';
 import { strategyFromType, validateStrategy } from 'src/general/strategy_helper';
 import { useGameStore } from 'src/stores/game-store';
 import TipClient, { makeNewPayload } from 'src/api/v1/clients/TipClient';
+import confetti from "@hiseb/confetti"
 
 const props = defineProps<{ tournamentId: string, tipStrategyId: string, id?: string, forResult?: boolean }>()
 const userStore = useUserStore()
@@ -64,8 +65,6 @@ const tipStrategy = ref<TipStrategy | null>(null)
 
 // test data for now
 const tip = ref<TipPayload>(makeNewPayload(props.tournamentId, props.tipStrategyId))
-
-
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -91,7 +90,7 @@ function _onOKClick () {
   // ...and it will also hide the dialog automatically
 }
 
-const saveTip = async () => {
+const saveTip = async (e: Event) => {
   if (props.forResult) {
     const result = makeNewResultPayload()
     result.strategyResults = Object.values(strategyData.value)
@@ -100,6 +99,19 @@ const saveTip = async () => {
       onDialogOK(response.data)
     }
     return;
+  }
+
+  if ([2, 9].indexOf(Math.floor(Math.random() * 10))) {
+    await userStore.playSound()
+    confetti(
+      {
+        position: { x: (e as PointerEvent).clientX, y: (e as PointerEvent).clientY },	// Origin position
+        count: 50,			// Number of particles
+        size: 1,			// Size of the particles
+        velocity: 200,		// Initial particle velocity
+        fade: false
+      }
+    )
   }
 
   tip.value.strategies = Object.values(strategyData.value);
@@ -125,9 +137,13 @@ onMounted(async () => {
   // 1. Fetch the Tipstrategy by ID
   const response = await tipStrategyClient.byId(props.tipStrategyId, (!props.forResult) ? new URLSearchParams({ with: 'my_tips' }) : undefined)
   if (response.data) {
+
     response.data.strategyTypes = response.data.strategyTypes.sort((a, b) => a.toString().localeCompare(b.toString()))
-    if (!props.forResult && response.data.tips && response.data.tips.length > 0) {
-      tip.value = response.data.tips[0] as Tip
+    const endDate = new Date(response.data.endsAt || '');
+    isClosed.value = response.data.completed || (endDate && endDate < new Date())
+
+    if (!props.forResult && !isClosed.value && response.data.tips && response.data.tips.length > 0) {
+      tip.value = JSON.parse(JSON.stringify(response.data.tips[0])) as Tip
       strategyData.value = Object.fromEntries(tip.value.strategies.map((entry) => [entry.kind, entry]))
     } else if (response.data.strategyTypes) {
       strategyData.value = Object.fromEntries(response.data.strategyTypes.map((entry) => {
@@ -142,8 +158,6 @@ onMounted(async () => {
       }
     }
 
-    const endDate = new Date(response.data.endsAt || '');
-    isClosed.value = response.data.completed || (endDate && endDate < new Date())
 
     tipStrategy.value = response.data
   }

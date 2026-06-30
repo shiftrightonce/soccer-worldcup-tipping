@@ -2,6 +2,7 @@ mod country_controller;
 mod country_group_controller;
 mod game_controller;
 mod group_controller;
+mod server_send_controller;
 mod tip_controller;
 mod tip_strategy_controller;
 mod tournament_controller;
@@ -131,6 +132,11 @@ pub fn register_routes(manager: &mut RouterManager) {
                     user_controller::get_user_handler,
                     &["can:users:view"],
                 );
+        });
+
+        // sse
+        router.nest("/live-sse", |router| {
+            router.get_x("/", server_send_controller::sse_handler);
         });
     });
 }

@@ -1,4 +1,5 @@
 import { LoadingBar } from "quasar";
+import { useUserStore } from "src/stores/user-store";
 
 export type ApiResponse<T> = {
   data: T | null;
@@ -24,15 +25,18 @@ export class BaseClient {
     endPoint: string,
     params: URLSearchParams | null = null,
   ): Promise<ApiResponse<T>> {
-    return await fetch(this.buildUrl(endPoint, params), {
+    LoadingBar.start()
+    const response = await fetch(this.buildUrl(endPoint, params), {
       headers: this.authHeader,
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .catch((e) => {
-        throw e;
-      });
+    });
+    LoadingBar.stop()
+
+    if (response.status == 401) {
+      await useUserStore().logout();
+      throw new Error("authentication failed")
+    }
+
+    return response.json();
   }
 
   protected async getMany<T> (
@@ -40,27 +44,33 @@ export class BaseClient {
     params: URLSearchParams | null = null,
   ): Promise<ApiResponse<T[]>> {
     LoadingBar.start()
-    return await fetch(this.buildUrl(endPoint, params), {
+    const response = await fetch(this.buildUrl(endPoint, params), {
       headers: this.authHeader,
-    })
-      .then((response) => {
-        LoadingBar.stop()
-        return response.json();
-      })
-      .catch((e) => {
-        LoadingBar.stop()
-        throw e;
-      });
+    });
+    LoadingBar.stop()
+
+    if (response.status == 401) {
+      await useUserStore().logout();
+      throw new Error("authentication failed")
+    }
+
+    return response.json();
   }
 
   protected async fetchPage<T> (
     endPoint: string,
     params: URLSearchParams | null = null,
   ): Promise<PaginateResult<T>> {
+    LoadingBar.start()
     const response = await fetch(this.buildUrl(endPoint, params), {
       headers: this.authHeader,
     });
+    LoadingBar.stop()
 
+    if (response.status == 401) {
+      await useUserStore().logout();
+      throw new Error("authentication failed")
+    }
     return await response.json();
   }
 
@@ -71,8 +81,12 @@ export class BaseClient {
       headers: this.authHeader,
       body: payload,
     });
-
     LoadingBar.stop()
+
+    if (response.status == 401) {
+      await useUserStore().logout();
+      throw new Error("authentication failed")
+    }
     return await response.json();
   }
 
@@ -84,6 +98,11 @@ export class BaseClient {
       body: payload,
     });
     LoadingBar.stop()
+
+    if (response.status == 401) {
+      await useUserStore().logout();
+      throw new Error("authentication failed")
+    }
     return await response.json();
   }
 

@@ -47,7 +47,7 @@ import { useRouter } from 'vue-router';
 import type { Game } from 'src/api/Game';
 import FlagComponent from 'src/components/FlagComponent.vue';
 import { useQuasar } from 'quasar'
-import TipStrategyComponent from './TipStrategyComponent.vue';
+import TipStrategyDialogComponent from './TipStrategyDialogComponent.vue';
 import { useGameStore } from 'src/stores/game-store';
 
 const $q = useQuasar()
@@ -64,13 +64,13 @@ const emits = defineEmits<{ tipSaved: [Tip] }>()
 
 const onManageBtnClick = async () => {
   if (props.tipStrategy.strategyTypes.includes('round_32_qualifiers')) {
-    useDialog.value = false
+    useDialog.value = true
   }
 
   if (useDialog.value) {
     // open dialog with TipStrategyComponent
     $q.dialog({
-      component: TipStrategyComponent,
+      component: TipStrategyDialogComponent,
       componentProps: {
         tournamentId: props.tipStrategy.tournamentId || props.tip?.tipStrategy?.tournamentId || '',
         tipStrategyId: props.tipStrategy.id || props.tip?.tipStrategy?.id || '',
@@ -87,6 +87,9 @@ const onManageBtnClick = async () => {
     // navigate to TipManagePage
     await router.push({
       name: 'manage-tip',
+      query: {
+        forResult: props.forResult + ''
+      },
       params: {
         tournamentId: props.tipStrategy.tournamentId || props.tip?.tipStrategy?.tournamentId || '',
         tipStrategyId: props.tipStrategy.id || props.tip?.tipStrategy?.id || '',

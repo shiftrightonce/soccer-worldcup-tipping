@@ -1,5 +1,5 @@
 <template>
-  <select-countries v-model="model" :countries="countries" :tip-strategy="props.tipStrategy" :max="1"
+  <select-countries v-model="model" v-if="countries" :countries="countries" :tip-strategy="props.tipStrategy" :max="1"
     :is-closed="props.isClosed" :for-result="props.forResult" label="Country to win the tournament"></select-countries>
 </template>
 
