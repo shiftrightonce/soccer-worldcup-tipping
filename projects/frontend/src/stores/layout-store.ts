@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-const APP_VERSION = '0.0.7';
+const APP_VERSION = '0.0.8';
 let watchingForUpdate = false;
 
 export const useLayoutStore = defineStore('layoutStore', {

@@ -158,7 +158,6 @@ onMounted(async () => {
       }
     }
 
-
     tipStrategy.value = response.data
   }
 

@@ -82,13 +82,22 @@ const selectedCountries = reactive<Country[]>([])
 
 onMounted(() => {
   if (Array.isArray(model.value.entry)) {
+    model.value.entry.map((entry) => {
+      entry = entry.replaceAll('-', '');
+      return entry
+    });
     (model.value.entry.map((id) => props.countries.find((c) => c.id === id)) as Country[]).forEach((entry) => {
       selectedCountries.push(entry)
     });
-    selectedCountries.forEach((entry) => {
-      selectedValues[entry.id] = true
-    })
+  } else if (model.value.entry && typeof model.value.entry === 'string') {
+    model.value.entry = model.value.entry.replaceAll('-', '');
+    ([model.value.entry].map((id) => props.countries.find((c) => c.id === id)) as Country[]).forEach((entry) => {
+      selectedCountries.push(entry)
+    });
   }
+  selectedCountries.forEach((entry) => {
+    selectedValues[entry.id] = true
+  })
 
 
   if ((!model.value.entry || !Array.isArray(model.value.entry)) && props.max > 1) {

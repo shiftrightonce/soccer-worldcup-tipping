@@ -54,7 +54,7 @@ onMounted(async () => {
         scores.value = result.data
         scores.value.map((entry) => {
           // entry.position = index + 1;
-          if (entry.userId == user?.id) {
+          if (entry.userId == user?.id  || entry.userId.replaceAll('-', '') == user?.id.replaceAll('-', '')) {
             currentUserPoint.value = entry;
           }
           return entry

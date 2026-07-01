@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="hasCompleted">
+  <div v-if="hasCompleted && isReady">
     <q-tabs v-model="completedViewTabs" dense class="text-grey" active-color="primary" indicator-color="primary"
       align="justify" narrow-indicator>
       <q-tab name="result" label="Result" />
@@ -16,7 +16,7 @@
         <SelectCountries v-if="scoreEntered && model.entry && countries.length" v-model="model" :countries="countries"
           :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="1" label="">
         </SelectCountries>
-        <div v-else>
+        <div v-if="scoreEntered && !model.entry">
           <span class="text-h6">None</span>
         </div>
       </q-tab-panel>
@@ -26,12 +26,9 @@
             You didn't enter
           </span>
         </div>
-        <SelectCountries v-if="userEntered && dummyModel.entry && countries.length" v-model="dummyModel"
-          :countries="countries" :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="1" label="">
+        <SelectCountries v-if="userEntered && dummyModel.entry && isReady" v-model="dummyModel" :countries="countries"
+          :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="1" label="">
         </SelectCountries>
-        <div v-else>
-          <span class="text-h6">None</span>
-        </div>
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -58,6 +55,7 @@ const completedViewTabs = ref('result')
 const dummyModel = ref<{ kind: "first_yellow_card", "entry": string }>({ kind: 'first_yellow_card', entry: '' });
 const userEntered = ref(false)
 const scoreEntered = ref(false);
+const isReady = ref(false);
 
 
 onMounted(() => {
@@ -94,6 +92,7 @@ onMounted(() => {
     }
   }
 
+  isReady.value = true;
 })
 
 </script>

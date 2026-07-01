@@ -121,7 +121,7 @@ const routes: RouteRecordRaw[] = [
             name: 'strategies-dashboard'
           },
           {
-            path: 'strategies/manage/:id',
+            path: 'strategies/manage/:id?',
             component: () => import('pages/admin/manage/ManageStrategyPage.vue'),
             props: true,
             name: 'manage-strategy'

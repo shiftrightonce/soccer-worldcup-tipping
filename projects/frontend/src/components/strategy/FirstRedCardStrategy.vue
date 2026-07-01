@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasCompleted">
+  <div v-if="hasCompleted && isReady">
     <q-tabs v-model="completedViewTabs" dense class="text-grey" active-color="primary" indicator-color="primary"
       align="justify" narrow-indicator>
       <q-tab name="result" label="Result" />
@@ -10,13 +10,12 @@
     <q-tab-panels keep-alive v-model="completedViewTabs" animated>
       <q-tab-panel name="result">
         <div v-if="!scoreEntered">
-          {{ model.entry }}
           <span class="text-h6">Result pending</span>
         </div>
-        <SelectCountries v-if="scoreEntered && model.entry && countries.length" v-model="model" :countries="countries"
+        <SelectCountries v-if="scoreEntered && model.entry" v-model="model" :countries="countries"
           :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="1" label="">
         </SelectCountries>
-        <div v-else>
+        <div v-if="scoreEntered && !model.entry">
           <span class="text-h6">None</span>
         </div>
       </q-tab-panel>
@@ -26,16 +25,13 @@
             You didn't enter
           </span>
         </div>
-        <SelectCountries v-if="userEntered && dummyModel.entry && countries.length" v-model="dummyModel"
-          :countries="countries" :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="1" label="">
+        <SelectCountries v-if="userEntered && dummyModel.entry" v-model="dummyModel" :countries="countries"
+          :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="1" label="">
         </SelectCountries>
-        <div v-else>
-          <span class="text-h6">None</span>
-        </div>
       </q-tab-panel>
     </q-tab-panels>
   </div>
-  <SelectCountries v-model="model" v-if="!hasCompleted && countries.length" :countries="countries"
+  <SelectCountries v-model="model" v-if="!hasCompleted && isReady" :countries="countries"
     :tip-strategy="props.tipStrategy" :max="1" :is-closed="props.isClosed" :for-result="props.forResult"
     label="First to get a red card">
   </SelectCountries>
@@ -56,6 +52,7 @@ const completedViewTabs = ref('result')
 const dummyModel = ref<{ kind: "first_red_card", "entry": string }>({ kind: 'first_red_card', entry: '' });
 const userEntered = ref(false)
 const scoreEntered = ref(false);
+const isReady = ref(false);
 
 
 onMounted(() => {
@@ -79,17 +76,18 @@ onMounted(() => {
     const resultEntry = props.tipStrategy.result?.strategyResults.find((entry) => entry.kind === 'first_red_card')
     if (resultEntry) {
       model.value.entry = resultEntry.entry
-      scoreEntered.value = hasCompleted;
     }
+    scoreEntered.value = hasCompleted;
   }
 
   if (hasCompleted && props.tipStrategy.tips) {
-    const firstRedCard = props.tipStrategy.tips[0]?.strategies.find((entry) => entry.kind == 'first_red_card');
-    if (firstRedCard) {
-      dummyModel.value = firstRedCard
+    const userEntry = props.tipStrategy.tips[0]?.strategies.find((entry) => entry.kind == 'first_red_card');
+    if (userEntry) {
+      dummyModel.value = userEntry
       userEntered.value = true;
     }
   }
+  isReady.value = true;
 })
 
 </script>
