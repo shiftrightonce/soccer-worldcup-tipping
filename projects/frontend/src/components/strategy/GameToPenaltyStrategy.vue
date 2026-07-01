@@ -13,8 +13,8 @@
         <div v-if="!scoreEntered">
           <span class="text-h6">Result pending</span>
         </div>
-        <div else>
-          {{ model.entry? 'Yes': 'No' }}
+        <div else-if="scoreEntered">
+          {{ model.entry ? 'Yes' : 'No' }}
         </div>
       </q-tab-panel>
 
@@ -25,7 +25,7 @@
           </span>
         </div>
         <div v-if="userEntered">
-          {{ dummyModel.entry? 'Yes': 'No' }}
+          {{ dummyModel.entry ? 'Yes' : 'No' }}
         </div>
       </q-tab-panel>
     </q-tab-panels>
@@ -45,7 +45,7 @@ const [model, _] = defineModel<Strategy>({ required: true })
 const hasCompleted = (props.isClosed || props.tipStrategy?.completed) && !props.forResult
 
 const completedViewTabs = ref('result')
-const dummyModel = ref<{ kind: "game_to_penalty", "entry": boolean}>({ kind: 'game_to_penalty', entry: false });
+const dummyModel = ref<{ kind: "game_to_penalty", "entry": boolean }>({ kind: 'game_to_penalty', entry: false });
 const userEntered = ref(false)
 const scoreEntered = ref(false);
 
@@ -59,9 +59,9 @@ onMounted(() => {
   }
 
   if (hasCompleted && props.tipStrategy.tips) {
-    const userEntry= props.tipStrategy.tips[0]?.strategies.find((entry) => entry.kind == 'game_to_penalty');
+    const userEntry = props.tipStrategy.tips[0]?.strategies.find((entry) => entry.kind == 'game_to_penalty');
     if (userEntry) {
-      dummyModel.value = userEntry 
+      dummyModel.value = userEntry
       userEntered.value = true;
     }
   }

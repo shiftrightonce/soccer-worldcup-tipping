@@ -16,7 +16,7 @@
         <SelectCountries v-if="scoreEntered && model.entry && countries.length" v-model="model" :countries="countries"
           :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="32" label="">
         </SelectCountries>
-        <div v-else>
+        <div v-else-if="scoreEntered">
           <span class="text-h6">None</span>
         </div>
       </q-tab-panel>
@@ -35,7 +35,7 @@
   </div>
   <SelectCountries v-if="isReady && !hasCompleted" :tipStrategy="props.tipStrategy" :max="32" :countries="countries"
     :is-closed="props.isClosed" label="Select 32 countries" :for-result="props.forResult" v-model="model">
-    </SelectCountries>
+  </SelectCountries>
 </template>
 
 <script setup lang="ts">

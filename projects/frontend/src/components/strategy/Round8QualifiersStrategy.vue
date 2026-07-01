@@ -16,7 +16,7 @@
         <SelectCountries v-if="scoreEntered && model.entry && countries.length" v-model="model" :countries="countries"
           :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="16" label="">
         </SelectCountries>
-        <div v-else>
+        <div v-else-if="scoreEntered">
           <span class="text-h6">None</span>
         </div>
       </q-tab-panel>
@@ -34,8 +34,8 @@
     </q-tab-panels>
   </div>
 
-  <SelectCountries v-if="countries.length && !hasCompleted" :tipStrategy="props.tipStrategy" :max="8" :countries="countries" :is-closed="props.isClosed"
-    label="Select 8 countries" v-model="model"></SelectCountries>
+  <SelectCountries v-if="countries.length && !hasCompleted" :tipStrategy="props.tipStrategy" :max="8"
+    :countries="countries" :is-closed="props.isClosed" label="Select 8 countries" v-model="model"></SelectCountries>
 </template>
 
 <script setup lang="ts">
@@ -83,7 +83,7 @@ onMounted(async () => {
   }
 
   if (hasCompleted && props.tipStrategy.tips) {
-    const userEntry= props.tipStrategy.tips[0]?.strategies.find((entry) => entry.kind == 'round_8_qualifiers');
+    const userEntry = props.tipStrategy.tips[0]?.strategies.find((entry) => entry.kind == 'round_8_qualifiers');
     if (userEntry) {
       dummyModel.value = userEntry
       userEntered.value = true;

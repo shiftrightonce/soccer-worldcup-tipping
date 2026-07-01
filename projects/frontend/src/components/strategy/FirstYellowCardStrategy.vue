@@ -80,8 +80,8 @@ onMounted(() => {
     const resultEntry = props.tipStrategy.result?.strategyResults.find((entry) => entry.kind === 'first_yellow_card')
     if (resultEntry) {
       model.value.entry = resultEntry.entry
+      scoreEntered.value = hasCompleted
     }
-    scoreEntered.value = hasCompleted
   }
 
   if (hasCompleted && props.tipStrategy.tips) {
