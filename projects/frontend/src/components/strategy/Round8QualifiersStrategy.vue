@@ -27,15 +27,16 @@
           </span>
         </div>
         <SelectCountries v-if="userEntered && dummyModel.entry && countries.length" v-model="dummyModel"
-          :countries="countries" :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="16" label="">
+          :countries="countries" :tip-strategy="props.tipStrategy" :is-closed="hasCompleted" :max="8" label="">
         </SelectCountries>
       </q-tab-panel>
 
     </q-tab-panels>
   </div>
 
-  <SelectCountries v-if="countries.length && !hasCompleted" :tipStrategy="props.tipStrategy" :max="8"
-    :countries="countries" :is-closed="props.isClosed" label="Select 8 countries" v-model="model"></SelectCountries>
+  <SelectCountries v-if="isReady && !hasCompleted" :tipStrategy="props.tipStrategy" :max="8" :countries="countries"
+    :is-closed="props.isClosed" :for-result="props.forResult" label="Select 8 countries" v-model="model">
+  </SelectCountries>
 </template>
 
 <script setup lang="ts">
@@ -47,6 +48,7 @@ import CountryGroupClient from 'src/api/v1/clients/CountryGroupClient';
 import type { Country } from 'src/api/Country';
 import { onMounted, ref } from 'vue';
 
+const isReady = ref(false)
 const props = defineProps<{ tipStrategy: TipStrategy, isClosed: boolean, forResult?: boolean }>()
 const countries = ref<Country[]>([])
 const [model, _] = defineModel<Strategy>({ required: true })
@@ -69,6 +71,7 @@ onMounted(async () => {
     response.data.forEach((entry) => {
       const country = entry.country as Country
       if (country) {
+        country.name = country.name + ' - ' + entry.group?.name;
         countries.value.push(country)
       }
     })
@@ -89,5 +92,7 @@ onMounted(async () => {
       userEntered.value = true;
     }
   }
+
+  isReady.value = true;
 })
 </script>
